@@ -7,6 +7,7 @@
 # OUTPUT:      Output is based on required data needed by user GUI interactions
 # HONOR CODE:  On my honor, as an Aggie, I have neither given nor
 #               received unauthorized aid on this academic work.
+from datetime import datetime
 from typing import List, Any
 
 from src.transaction import Transaction
@@ -50,8 +51,13 @@ class GillPayService:
         """
         Calls TransactionDAO to append (POST) a transaction to CSV
         """
-        # TODO - Input validation
-        self.transactionDAO.SaveTransaction(transaction)
+        # Check if entered date is valid
+        if self.DateValidator(transaction.date):
+            self.transactionDAO.SaveTransaction(transaction)
+        else:
+            # Inform user that invalid date/format was entered
+            print("You entered an invalid Date!")
+            print("Remember enter date in the give formate YYYY/MM/DD")
 
     def CalculateSum(self, transactionList: List[Transaction]) -> float:
         """
@@ -61,6 +67,17 @@ class GillPayService:
         for transaction in transactionList:
             total += transaction.amount
         return total
+
+    def DateValidator(self, date: str) -> bool:
+        """
+        Checks if date is valid as in proper format
+        """
+        try:
+            # Parses time based on date regex format
+            datetime.strptime(date, "%Y/%m/%d")
+            return True
+        except ValueError:
+            return False
 
     def GetTransactionSummary(self) -> dict[Any, Any]:
         """

@@ -17,17 +17,21 @@ def HandleTransaction():
     Module to handle input of a transaction (expense/income). A GUI will replace
     the data capturing in a later phase
     """
-    gillpay = GillPayService()
+    try:
+        # Use try/catch to handle invalid amount scenario
+        gillpay = GillPayService()
 
-    print()
-    # Engages user to input transaction data
-    transactionType = input("Expense or Income: ").lower()
-    transactionCategory = input("Transaction Category: ").lower()
-    transactionAmount = round(float(input("Transaction Amount: ")), 2)
-    transactionDate = input("Transaction Date (YYYY/MM/DD): ")
-    transaction = Transaction(transactionType, transactionCategory,
-                              transactionAmount, transactionDate)
-    gillpay.PostTransaction(transaction)
+        print()
+        # Engages user to input transaction data
+        transactionType = input("Expense or Income: ").lower()
+        transactionCategory = input("Transaction Category: ").lower()
+        transactionAmount = round(float(input("Transaction Amount: ")), 2)
+        transactionDate = input("Transaction Date (YYYY/MM/DD): ")
+        transaction = Transaction(transactionType, transactionCategory,
+                                  transactionAmount, transactionDate)
+        gillpay.PostTransaction(transaction)
+    except ValueError:
+        print("Please enter a valid numeric value for amount!")
 
 
 def HandleSummary():
