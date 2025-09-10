@@ -30,17 +30,19 @@ class TransactionDAO:
         """
         return pandas.read_csv(self.datasource)
 
-    def GetTransactions(self):
+    def GetTransactions(self) -> list[Transaction] | None:
         """
         Reads all transactions from CSV and returns list of data
         """
         try:
             dataFrame = self.GetDataFrame()
-            return dataFrame.values.tolist()
+            csvList = dataFrame.values.tolist()
+            # Converts list of list to List of Transactions
+            return self.ConvertToTransactionList(csvList)
         except FileNotFoundError:
             print(f"Unable to find file {self.datasource}")
 
-    def GetTransactionBy(self, columName, columnValue) -> List[Transaction]:
+    def GetTransactionsBy(self, columName, columnValue) -> List[Transaction]:
         """
         Queries CSV based on column name/value and returns list of data
         """
@@ -57,17 +59,24 @@ class TransactionDAO:
             # Opens the file in append mode
             with open(self.datasource, "a", newline="") as csv_file:
                 csvWriter = csv.writer(csv_file)
+                # Pulls Transaction data into a list (row)
                 newRow = [transaction.transaction_type, transaction.category,
                           transaction.amount, transaction.date]
+                # Appends new row to CSV
                 csvWriter.writerow(newRow)
         except FileNotFoundError:
             print(f"Unable to find file {self.datasource}")
 
     def ConvertToTransactionList(self, csvData) -> List[Transaction]:
+        """
+        Converts a list of list data to a list of Transactions
+        """
         transactionList = []
         for row in csvData:
             transaction = Transaction(
-                transaction=row[0], category=row[1], amount=row[2], date=row[3]
-            )
+                transaction=row[0],
+                category=row[1],
+                amount=row[2],
+                date=row[3])
             transactionList.append(transaction)
         return transactionList

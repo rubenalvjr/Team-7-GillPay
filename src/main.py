@@ -18,6 +18,9 @@ def HandleTransaction():
     the data capturing in a later phase
     """
     gillpay = GillPayService()
+
+    print()
+    # Engages user to input transaction data
     transactionType = input("Expense or Income: ").lower()
     transactionCategory = input("Transaction Category: ").lower()
     transactionAmount = round(float(input("Transaction Amount: ")), 2)
@@ -34,12 +37,12 @@ def HandleSummary():
     """
     gillpay = GillPayService()
     summaryData = gillpay.GetTransactionSummary()
-
-    print(data)
-    # print(f"Your Total Income: {totalIncome}")
-    # print(f"Your Total Expenses: {totalExpense}")
-    # print(f"Your Net Income: {totalIncome - totalExpense}")
-    # print(" " * 4)
+    print()
+    print(f"{'-' * 5} Account Summary {'-' * 5}")
+    print(f"{'Description':10} {'Amount':>10}")
+    print(f"{'Income':10} {summaryData["income"]:>10.2f}")
+    print(f"{'Expense':10} {summaryData["expense"]:>10.2f}")
+    print(f"{'Net':10} {summaryData["net"]:>10.2f}")
 
 
 def main():
@@ -48,12 +51,14 @@ def main():
     will be replaced by GUI in later phases of the application development
     :return:
     """
-    isGillPayRunning = True
-    while isGillPayRunning:
+    gillPayIsRunning = True
+    while gillPayIsRunning:
+        print()
         print("Howdy!! Fellow Money Savers!")
-        print("Press 1 for adding a transaction")
-        print("Press 2 for account summary")
-        print("Press 3 to call it a day")
+        print()
+        print("Press 1: Add Transaction")
+        print("Press 2: Account Summary")
+        print("Press 3: Farewell!")
         try:
             userChoice = int(input("Action: "))
         except ValueError:
@@ -64,9 +69,9 @@ def main():
         elif userChoice == 2:
             HandleSummary()
         else:
-            isGillPayRunning = False
+            gillPayIsRunning = False
 
-    print("Thank you for using GillPay for your finance needs!")
+    print("Thank you for using GillPay for your finance tracking needs!")
 
 
 if __name__ == '__main__':

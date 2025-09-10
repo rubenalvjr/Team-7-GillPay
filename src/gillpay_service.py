@@ -23,47 +23,56 @@ class GillPayService:
 
     def GetExpenseData(self) -> List[Transaction]:
         """
-        Call TransactionDAO to get all instances of Expense data
+        Calls TransactionDAO to get all instances of Expense data
         """
         expenseData = (self.
                        transactionDAO
-                       .GetTransactionBy("type", "expense"))
+                       .GetTransactionsBy("type", "expense"))
 
         return expenseData
 
     def GetIncomeData(self) -> List[Transaction]:
         """
-        Call TransactionDAO to get all instances of Income data
+        Calls TransactionDAO to get all instances of Income data
         """
         incomeData = (self.
                       transactionDAO
-                      .GetTransactionBy("type", "income"))
+                      .GetTransactionsBy("type", "income"))
         return incomeData
 
     def GetAllTransactions(self) -> List[Transaction]:
         """
-        Call TransactionDAO to get all transactions
+        Calls TransactionDAO to get all transactions
         """
         return self.transactionDAO.GetTransactions()
 
     def PostTransaction(self, transaction: Transaction):
         """
-        Call TransactionDAO to append (POST) a transaction to CSV
+        Calls TransactionDAO to append (POST) a transaction to CSV
         """
         # TODO - Input validation
         self.transactionDAO.SaveTransaction(transaction)
 
     def CalculateSum(self, transactionList: List[Transaction]) -> float:
+        """
+        Calculates sum for a given list of Transactions
+        """
         total = 0
         for transaction in transactionList:
             total += transaction.amount
         return total
 
     def GetTransactionSummary(self) -> dict[Any, Any]:
+        """
+        Creates a dictionary containing the summary data of Income, Expense,
+        and Net Income
+        """
         summaryDictionary = {}
         incomeSummary = self.CalculateSum(self.GetIncomeData())
         expenseSummary = self.CalculateSum(self.GetExpenseData())
+        # Calculate Net Income based on Income and Expense data
         netIncomeSummary = incomeSummary - expenseSummary
+        # Sets the values of the dictionary for each summary category
         summaryDictionary["income"] = incomeSummary
         summaryDictionary["expense"] = expenseSummary
         summaryDictionary["net"] = netIncomeSummary
