@@ -1,47 +1,45 @@
 # PROGRAM:     Main
+# AUTHOR:      Team 7
 # PURPOSE:     Launches GillPay application
 # INPUT:       Ask for user input to create a transaction or view summary
-# PROCESS:     Based on user input application call function to process users
-# request
+# PROCESS:     - User selects 1 than inputs render to capture transaction
+#              - User selects 2 than account summary info is displayed
+#              - User selects 3 than application break from loop
 # OUTPUT:      Successful transaction creation or account summary
 # HONOR CODE:  On my honor, as an Aggie, I have neither given nor
 #               received unauthorized aid on this academic work.
+from src.gillpay_service import GillPayService
+from src.transaction import Transaction
+
 
 def HandleTransaction():
     """
     Module to handle input of a transaction (expense/income). A GUI will replace
     the data capturing in a later phase
-    :return: None
     """
-    # TODO - Add logic to handle this in GillPayService
-    transactionType = input("Expense or Income: ")
-    transactionCategory = input("Transaction Category: ")
-    transactionAmount = input("Transaction Amount: ")
-    transactionDate = input("Transaction Date (YYYY/MM/DD):")
-
-    print()
-    print(f"Your transaction is:")
-    print(f"Type: {transactionType}")
-    print(f"Type: {transactionCategory}")
-    print(f"Type: ${transactionAmount}")
-    print(f"Type: {transactionDate}")
-    print(" " * 4)
+    gillpay = GillPayService()
+    transactionType = input("Expense or Income: ").lower()
+    transactionCategory = input("Transaction Category: ").lower()
+    transactionAmount = round(float(input("Transaction Amount: ")), 2)
+    transactionDate = input("Transaction Date (YYYY/MM/DD): ")
+    transaction = Transaction(transactionType, transactionCategory,
+                              transactionAmount, transactionDate)
+    gillpay.PostTransaction(transaction)
 
 
 def HandleSummary():
     """
     Module to handle the output of users account summary. A GUI will replace
     the data capturing in a later phase
-    :return:
     """
-    # TODO - Add logic to handle this in GillPayService
-    totalIncome = 3000
-    totalExpense = 200
-    print()
-    print(f"Your Total Income: {totalIncome}")
-    print(f"Your Total Income: {totalExpense}")
-    print(f"Your Total Income: {totalIncome - totalExpense}")
-    print(" " * 4)
+    gillpay = GillPayService()
+    summaryData = gillpay.GetTransactionSummary()
+
+    print(data)
+    # print(f"Your Total Income: {totalIncome}")
+    # print(f"Your Total Expenses: {totalExpense}")
+    # print(f"Your Net Income: {totalIncome - totalExpense}")
+    # print(" " * 4)
 
 
 def main():
