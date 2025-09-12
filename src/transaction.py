@@ -10,12 +10,13 @@
 
 class Transaction:
 
-    def __init__(self, transaction: str, category: str, amount: float,
-                 date: str):
+    def __init__(self, transaction: str, category: str, description: str,
+                 amount: float, date: str):
         """
         Constructor with required parameters needed to initial object
         """
         self.transaction_type = transaction
         self.category = category
+        self.description = description
         self.amount = amount
         self.date = date

@@ -60,8 +60,11 @@ class TransactionDAO:
             with open(self.datasource, "a", newline="") as csv_file:
                 csvWriter = csv.writer(csv_file)
                 # Pulls Transaction data into a list (row)
-                newRow = [transaction.transaction_type, transaction.category,
-                          transaction.amount, transaction.date]
+                newRow = [transaction.transaction_type,
+                          transaction.category,
+                          transaction.description,
+                          transaction.amount,
+                          transaction.date]
                 # Appends new row to CSV
                 csvWriter.writerow(newRow)
         except FileNotFoundError:
@@ -76,7 +79,8 @@ class TransactionDAO:
             transaction = Transaction(
                 transaction=row[0],
                 category=row[1],
-                amount=row[2],
-                date=row[3])
+                description=row[2],
+                amount=row[3],
+                date=row[4])
             transactionList.append(transaction)
         return transactionList

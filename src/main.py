@@ -25,10 +25,14 @@ def HandleTransaction():
         # Engages user to input transaction data
         transactionType = input("Expense or Income: ").lower()
         transactionCategory = input("Transaction Category: ").lower()
+        transactionDescription = input("Transaction Description: ").lower()
         transactionAmount = round(float(input("Transaction Amount: ")), 2)
         transactionDate = input("Transaction Date (YYYY/MM/DD): ")
-        transaction = Transaction(transactionType, transactionCategory,
-                                  transactionAmount, transactionDate)
+        transaction = Transaction(transactionType,
+                                  transactionCategory,
+                                  transactionDescription,
+                                  transactionAmount,
+                                  transactionDate)
         gillpay.PostTransaction(transaction)
     except ValueError:
         print("Please enter a valid numeric value for amount!")
@@ -53,7 +57,6 @@ def main():
     """
     This logic is used to interact with data read and create functionality it
     will be replaced by GUI in later phases of the application development
-    :return:
     """
     gillPayIsRunning = True
     while gillPayIsRunning:

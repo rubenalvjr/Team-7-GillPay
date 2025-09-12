@@ -1,5 +1,2 @@
-type,category,amount,date
-income,job,12.15,2025/12/10
-
-income,job,1234.56,2025/10/10
-expense,rent,1000.12,2025/09/12
+type,category,description,amount,date
+income,paycheck,monthly paycheck,1200.0,2024/09/11
