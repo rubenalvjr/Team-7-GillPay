@@ -2,37 +2,42 @@
 # AUTHOR:      Team 7
 # PURPOSE:     Launches GillPay application
 # INPUT:       Ask for user input to create a transaction or view summary
-# PROCESS:     - User selects 1 than inputs render to capture transaction
-#              - User selects 2 than account summary info is displayed
-#              - User selects 3 than application break from loop
+# PROCESS:     - User selects 1 then inputs data to capture transaction
+#              - User selects 2 then account summary info is displayed
+#              - User selects 3 then exits application loop
 # OUTPUT:      Successful transaction creation or account summary
 # HONOR CODE:  On my honor, as an Aggie, I have neither given nor
-#               received unauthorized aid on this academic work.
+#              received unauthorized aid on this academic work.
+
 from src.gillpay_service import GillPayService
-from src.transaction import Transaction
+from src.models.transaction import Transaction
 
 
 def HandleTransaction():
     """
-    Module to handle input of a transaction (expense/income). A GUI will replace
-    the data capturing in a later phase
+    Handle input of a transaction (expense/income).
+    A GUI will replace this CLI data capture in a later phase.
     """
     try:
-        # Use try/catch to handle invalid amount scenario
         gillpay = GillPayService()
 
         print()
-        # Engages user to input transaction data
+        # Collect transaction details from user
         transactionType = input("Expense or Income: ").lower()
         transactionCategory = input("Transaction Category: ").lower()
-        transactionDescription = input("Transaction Description: ").lower()
+        transactionDescription = input("Transaction Description: ")
         transactionAmount = round(float(input("Transaction Amount: ")), 2)
         transactionDate = input("Transaction Date (YYYY/MM/DD): ")
-        transaction = Transaction(transactionType,
-                                  transactionCategory,
-                                  transactionDescription,
-                                  transactionAmount,
-                                  transactionDate)
+
+        # Create Transaction object with all 5 fields
+        transaction = Transaction(
+            transaction=transactionType,
+            category=transactionCategory,
+            description=transactionDescription,
+            amount=transactionAmount,
+            date=transactionDate
+        )
+
         gillpay.PostTransaction(transaction)
     except ValueError:
         print("Please enter a valid numeric value for amount!")
@@ -40,23 +45,23 @@ def HandleTransaction():
 
 def HandleSummary():
     """
-    Module to handle the output of users account summary. A GUI will replace
-    the data capturing in a later phase
+    Output the user's account summary.
+    A GUI will replace this CLI display in a later phase.
     """
     gillpay = GillPayService()
     summaryData = gillpay.GetTransactionSummary()
     print()
     print(f"{'-' * 5} Account Summary {'-' * 5}")
     print(f"{'Description':10} {'Amount':>10}")
-    print(f"{'Income':10} {summaryData["income"]:>10.2f}")
-    print(f"{'Expense':10} {summaryData["expense"]:>10.2f}")
-    print(f"{'Net':10} {summaryData["net"]:>10.2f}")
+    print(f"{'Income':10} {summaryData['income']:>10.2f}")
+    print(f"{'Expense':10} {summaryData['expense']:>10.2f}")
+    print(f"{'Net':10} {summaryData['net']:>10.2f}")
 
 
 def main():
     """
-    This logic is used to interact with data read and create functionality it
-    will be replaced by GUI in later phases of the application development
+    Interactive loop for GillPay.
+    Will be replaced by GUI in later phases.
     """
     gillPayIsRunning = True
     while gillPayIsRunning:
@@ -66,17 +71,21 @@ def main():
         print("Press 1: Add Transaction")
         print("Press 2: Account Summary")
         print("Press 3: Farewell!")
+
         try:
             userChoice = int(input("Action: "))
         except ValueError:
             print("You entered invalid data")
+            continue
 
         if userChoice == 1:
             HandleTransaction()
         elif userChoice == 2:
             HandleSummary()
-        else:
+        elif userChoice == 3:
             gillPayIsRunning = False
+        else:
+            print("Invalid choice, please select 1, 2, or 3.")
 
     print("Thank you for using GillPay for your finance tracking needs!")
 

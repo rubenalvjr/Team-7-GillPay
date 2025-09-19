@@ -7,11 +7,11 @@
 # OUTPUT:      Output is based on required data needed by user GUI interactions
 # HONOR CODE:  On my honor, as an Aggie, I have neither given nor
 #               received unauthorized aid on this academic work.
-from datetime import datetime
+import datetime
 from typing import List, Any
 
-from src.transaction import Transaction
-from src.transaction_dao import TransactionDAO
+from src.models.transaction import Transaction
+from src.dao.transaction_dao import TransactionDAO
 
 
 class GillPayService:
@@ -52,9 +52,12 @@ class GillPayService:
         Calls TransactionDAO to append (POST) a transaction to CSV
         """
         # Check if entered date is valid
-        if self.DateValidator(transaction.date) and self.TransactionValidator(
-                transaction.transaction_type):
+        if self.DateValidator(transaction.date):
             self.transactionDAO.SaveTransaction(transaction)
+        else:
+            # Inform user that invalid date/format was entered
+            print("You entered an invalid Date!")
+            print("Remember enter date in the give formate YYYY/MM/DD")
 
     def CalculateSum(self, transactionList: List[Transaction]) -> float:
         """
@@ -65,30 +68,15 @@ class GillPayService:
             total += transaction.amount
         return total
 
-    def TransactionValidator(self, transactionType):
-        """
-        Checks if transaction is correct type (Income/Expense)
-        """
-        if transactionType == "expense" or transactionType == "income":
-            return True
-        else:
-            # Inform user that invalid transaction type
-            print("You entered an invalid data!")
-            print("Only Expense and Income are allowed transactions")
-            return False
-
     def DateValidator(self, date: str) -> bool:
         """
         Checks if date is valid as in proper format
         """
         try:
             # Parses time based on date regex format
-            datetime.strptime(date, "%Y/%m/%d")
+            datetime.datetime.strptime(date, "%Y/%m/%d")
             return True
         except ValueError:
-            # Inform user that invalid date/format was entered
-            print("You entered an invalid Date!")
-            print("Remember enter date in the give formate YYYY/MM/DD")
             return False
 
     def GetTransactionSummary(self) -> dict[Any, Any]:

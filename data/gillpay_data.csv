@@ -1,2 +1,17 @@
-type,category,description,amount,date
-income,paycheck,monthly paycheck,1200.0,2024/09/11
+transaction,category,description,amount,date
+income,paycheck,paycheck,2500,2025/09/12
+expense,food,beans and rice,250,2025/09/12
+expense,food,tacos,14,2025/09/12
+income,monies,gold coins,240,2025/09/12
+income,monies,more monies,150,2025/09/12
+expense,clothes,shoes and socks,200,2025/09/12
+income,paycheck,paycheck,1500,2025/09/12
+expense,food,Red Lobster,134.22,2025/09/12
+expense,tools,tools for job,350.45,2025/09/12
+income,payday,joyous celebration for more monies,204.58,2025/09/12
+expense,food,Los Tios,47.4,2025/09/12
+income,Mum,Too cheap,100.0,2025/09/13
+income,test,this is a test,200.0,2025/09/18
+income,test,this is another test,300.0,2025/09/18
+expense,test 34,this is one last test,4300.0,2025/09/18
+income,payyay!,all the monies,40000.0,2025/09/18
