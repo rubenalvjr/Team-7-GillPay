@@ -9,7 +9,7 @@
 #               received unauthorized aid on this academic work.
 import datetime
 from typing import List, Any
-
+from prettytable import PrettyTable
 from src.models.transaction import Transaction
 from src.dao.transaction_dao import TransactionDAO
 
@@ -28,7 +28,7 @@ class GillPayService:
         """
         expenseData = (self.
                        transactionDAO
-                       .GetTransactionsBy("type", "expense"))
+                       .GetTransactionsBy("transaction", "expense"))
 
         return expenseData
 
@@ -38,7 +38,7 @@ class GillPayService:
         """
         incomeData = (self.
                       transactionDAO
-                      .GetTransactionsBy("type", "income"))
+                      .GetTransactionsBy("transaction", "income"))
         return incomeData
 
     def GetAllTransactions(self) -> List[Transaction]:
@@ -94,3 +94,43 @@ class GillPayService:
         summaryDictionary["expense"] = expenseSummary
         summaryDictionary["net"] = netIncomeSummary
         return summaryDictionary
+
+    def GenerateReport(self, reportType: str):
+        """
+        Creates a report visualization by on passed in report type. The report
+        is displayed in the CLI
+        """
+        table = PrettyTable()
+        if reportType == "EXP_BY_CAT":
+            # Retrieve Expense by Report Data needed for building report
+            reportData = self.transactionDAO.ExpenseByCategoryData()
+
+            # Set column headers for report
+            table.field_names = ["Category", "Amount"]
+
+            # Set report title
+            table.title = "Expense By Category"
+
+            # Load data for each row
+            for _, row in reportData.iterrows():
+                table.add_row([row["category"], f"${row['amount']:.2f}"])
+            print(table)
+
+        elif reportType == "SUMMARY_BY_MONTH":
+            # Retrieve Summary by Month Data needed for building report
+            reportData = self.transactionDAO.SummaryByMonthData()
+
+            # Set column headers for report
+            table.field_names = ["Month", "Income", "Expense", "Net"]
+
+            # Set report title
+            table.title = "Summary By Month "
+
+            # Load data for each row
+            for _, row in reportData.iterrows():
+                table.add_row([
+                    str(row["month"]),
+                    f"${row['income']:.2f}",
+                    f"${row['expense']:.2f}",
+                    f"${row['net']:.2f}", ])
+            print(table)

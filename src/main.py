@@ -4,10 +4,13 @@
 # INPUT:       Ask for user input to create a transaction or view summary
 # PROCESS:     - User selects 1 then inputs data to capture transaction
 #              - User selects 2 then account summary info is displayed
-#              - User selects 3 then exits application loop
+#              - User selects 3 then Expense by Category Report is displayed
+#              - User selects 4 then Spending By Month Report is displayed
+#              - User selects 5 then application is closed
 # OUTPUT:      Successful transaction creation or account summary
 # HONOR CODE:  On my honor, as an Aggie, I have neither given nor
 #              received unauthorized aid on this academic work.
+from selectors import SelectSelector
 
 from src.gillpay_service import GillPayService
 from src.models.transaction import Transaction
@@ -58,6 +61,16 @@ def HandleSummary():
     print(f"{'Net':10} {summaryData['net']:>10.2f}")
 
 
+def HandleReport(reportType: str):
+    """
+    Display the report for all expenses by category from highest
+    to lowest total
+    """
+    gillpay = GillPayService()
+    print()
+    gillpay.GenerateReport(reportType)
+
+
 def main():
     """
     Interactive loop for GillPay.
@@ -70,7 +83,9 @@ def main():
         print()
         print("Press 1: Add Transaction")
         print("Press 2: Account Summary")
-        print("Press 3: Farewell!")
+        print("Press 3: Expense by Category Report")
+        print("Press 4: Spending By Month Report")
+        print("Press 5: Farewell!")
 
         try:
             userChoice = int(input("Action: "))
@@ -83,9 +98,13 @@ def main():
         elif userChoice == 2:
             HandleSummary()
         elif userChoice == 3:
+            HandleReport("EXP_BY_CAT")
+        elif userChoice == 4:
+            HandleReport("SUMMARY_BY_MONTH")
+        elif userChoice == 5:
             gillPayIsRunning = False
         else:
-            print("Invalid choice, please select 1, 2, or 3.")
+            print("Invalid choice, please select value 1 - 5.")
 
     print("Thank you for using GillPay for your finance tracking needs!")
 

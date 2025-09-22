@@ -20,10 +20,10 @@ from pandas import DataFrame
 
 from src.models.transaction import Transaction
 
-
 from datetime import datetime
 
 _DATE_IN_FORMATS = ("%Y/%m/%d", "%m/%d/%Y", "%Y-%m-%d", "%m-%d-%Y")
+
 
 def _normalize_date_str(s: str) -> str:
     s = (s or "").strip()
@@ -35,6 +35,7 @@ def _normalize_date_str(s: str) -> str:
         except ValueError:
             continue
     return s
+
 
 class TransactionDAO:
     """
@@ -159,3 +160,42 @@ class TransactionDAO:
                 )
             )
         return items
+
+    def ExpenseByCategoryData(self):
+        """
+        Create an Expense by Category DataFrame so that information can be
+        passed
+        to client to be turned into a visualization
+        """
+        df = self.GetDataFrame()
+        # Pull only expense items
+        expenses = df[df["transaction"] == "expense"]
+
+        # Grouping and summing transactions by category and returning DataFrame
+        report = expenses.groupby('category')['amount'].sum().reset_index()
+
+        # Sorting items in the amount
+        return report.sort_values(by="amount", ascending=False)
+
+    def SummaryByMonthData(self):
+        """
+        Create a Summary by Month DataFrame so that information can be passed
+        to client to be turned into a visualization
+        :return:
+        """
+        df = self.GetDataFrame()
+        # Convert data column to datetime
+        df['date'] = pd.to_datetime(df['date'], format='%Y/%m/%d')
+
+        # Extract month-year for grouping
+        df['month'] = df['date'].dt.to_period('M')
+
+        # Group income and expense data by month and sum data
+        monthly_type = df.groupby(["month", "transaction"])[
+            "amount"].sum().unstack(fill_value=0)
+
+        # Calculate Net based on income and expense
+        monthly_type["net"] = monthly_type["income"] - monthly_type["expense"]
+
+        # Reset index for iteration
+        return monthly_type.reset_index()
