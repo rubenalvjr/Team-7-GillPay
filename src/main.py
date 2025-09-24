@@ -27,6 +27,7 @@ def HandleTransaction():
         print()
         # Collect transaction details from user
         transactionType = input("Expense or Income: ").lower()
+        HandleTransactionValidation(transactionType)
         transactionCategory = input("Transaction Category: ").lower()
         transactionDescription = input("Transaction Description: ")
         transactionAmount = round(float(input("Transaction Amount: ")), 2)
@@ -44,6 +45,16 @@ def HandleTransaction():
         gillpay.PostTransaction(transaction)
     except ValueError:
         print("Please enter a valid numeric value for amount!")
+    except TypeError:
+        print("You entered value other than Income or Expense")
+
+
+def HandleTransactionValidation(transactionType):
+    """
+    Validates user input is either Income or Expense
+    """
+    if transactionType != "expense" or transactionType != "income":
+        raise TypeError
 
 
 def HandleSummary():
@@ -52,13 +63,7 @@ def HandleSummary():
     A GUI will replace this CLI display in a later phase.
     """
     gillpay = GillPayService()
-    summaryData = gillpay.GetTransactionSummary()
-    print()
-    print(f"{'-' * 5} Account Summary {'-' * 5}")
-    print(f"{'Description':10} {'Amount':>10}")
-    print(f"{'Income':10} {summaryData['income']:>10.2f}")
-    print(f"{'Expense':10} {summaryData['expense']:>10.2f}")
-    print(f"{'Net':10} {summaryData['net']:>10.2f}")
+    gillpay.GetTransactionSummary()
 
 
 def HandleReport(reportType: str):
@@ -67,7 +72,6 @@ def HandleReport(reportType: str):
     to lowest total
     """
     gillpay = GillPayService()
-    print()
     gillpay.GenerateReport(reportType)
 
 
@@ -79,18 +83,19 @@ def main():
     gillPayIsRunning = True
     while gillPayIsRunning:
         print()
-        print("Howdy!! Fellow Money Savers!")
-        print()
-        print("Press 1: Add Transaction")
-        print("Press 2: Account Summary")
-        print("Press 3: Expense by Category Report")
-        print("Press 4: Spending By Month Report")
-        print("Press 5: Farewell!")
+        print("Please make a choice:")
+        print("1: Add Transaction")
+        print("2: Account Summary")
+        print("3: Expense by Category Report")
+        print("4: Spending By Month Report")
+        print("5: Farewell!")
 
         try:
             userChoice = int(input("Action: "))
         except ValueError:
-            print("You entered invalid data")
+            print()
+            print(f"You entered invalid data!")
+            print("Please enter value 1 - 5")
             continue
 
         if userChoice == 1:

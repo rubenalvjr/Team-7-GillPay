@@ -84,16 +84,19 @@ class GillPayService:
         Creates a dictionary containing the summary data of Income, Expense,
         and Net Income
         """
-        summaryDictionary = {}
+        table = PrettyTable()
         incomeSummary = self.CalculateSum(self.GetIncomeData())
         expenseSummary = self.CalculateSum(self.GetExpenseData())
         # Calculate Net Income based on Income and Expense data
         netIncomeSummary = incomeSummary - expenseSummary
         # Sets the values of the dictionary for each summary category
-        summaryDictionary["income"] = incomeSummary
-        summaryDictionary["expense"] = expenseSummary
-        summaryDictionary["net"] = netIncomeSummary
-        return summaryDictionary
+        table.title = "Account Summary"
+        table.field_names = ["Description", "Amount"]
+        table.add_row(["Income", f"${incomeSummary:.2f}"])
+        table.add_row(["Expense", f"${expenseSummary:.2f}"])
+        table.add_row(["Net Income", f"${netIncomeSummary:.2f}"])
+        print()
+        print(table)
 
     def GenerateReport(self, reportType: str):
         """
@@ -107,13 +110,12 @@ class GillPayService:
 
             # Set column headers for report
             table.field_names = ["Category", "Amount"]
-
-            # Set report title
-            table.title = "Expense By Category"
+            table.title = "Expense by Category Report"
 
             # Load data for each row
             for _, row in reportData.iterrows():
                 table.add_row([row["category"], f"${row['amount']:.2f}"])
+            print()
             print(table)
 
         elif reportType == "SUMMARY_BY_MONTH":
@@ -124,7 +126,7 @@ class GillPayService:
             table.field_names = ["Month", "Income", "Expense", "Net"]
 
             # Set report title
-            table.title = "Summary By Month "
+            table.title = "Summary By Month Report"
 
             # Load data for each row
             for _, row in reportData.iterrows():
@@ -133,4 +135,5 @@ class GillPayService:
                     f"${row['income']:.2f}",
                     f"${row['expense']:.2f}",
                     f"${row['net']:.2f}", ])
+            print()
             print(table)
