@@ -1,4 +1,5 @@
 # PROGRAM:     GillPayService
+# AUTHOR:      Team 7
 # PURPOSE:     Contains core business logic for GillPay application
 # INPUT:       Takes in input/requests from GillPay GUI
 # PROCESS:     Takes request data form GillPay GUI and processes it by
@@ -70,7 +71,7 @@ class GillPayService:
 
     def DateValidator(self, date: str) -> bool:
         """
-        Checks if date is valid as in proper format
+        Checks if date is valid and is in proper format
         """
         try:
             # Parses time based on date regex format
@@ -89,7 +90,8 @@ class GillPayService:
         expenseSummary = self.CalculateSum(self.GetExpenseData())
         # Calculate Net Income based on Income and Expense data
         netIncomeSummary = incomeSummary - expenseSummary
-        # Sets the values of the dictionary for each summary category
+
+        # Use PrettyTables library to create a formatted summary
         table.title = "Account Summary"
         table.field_names = ["Description", "Amount"]
         table.add_row(["Income", f"${incomeSummary:.2f}"])
@@ -126,7 +128,7 @@ class GillPayService:
             table.field_names = ["Month", "Income", "Expense", "Net"]
 
             # Set report title
-            table.title = "Summary By Month Report"
+            table.title = "Summary by Month Report"
 
             # Load data for each row
             for _, row in reportData.iterrows():

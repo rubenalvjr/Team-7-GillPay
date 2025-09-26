@@ -22,6 +22,7 @@ def HandleTransaction():
     A GUI will replace this CLI data capture in a later phase.
     """
     try:
+        # Instantiate GillPayService object
         gillpay = GillPayService()
 
         print()
@@ -42,10 +43,13 @@ def HandleTransaction():
             date=transactionDate
         )
 
+        # Post Transaction to CSV
         gillpay.PostTransaction(transaction)
     except ValueError:
+        # Notification to user that non-numeric values was entered
         print("Please enter a valid numeric value for amount!")
     except TypeError:
+        # Notification to user that invalid Transaction type was entered
         print("You entered value other than Income or Expense")
 
 
@@ -59,20 +63,31 @@ def HandleTransactionValidation(transactionType):
 
 def HandleSummary():
     """
-    Output the user's account summary.
+    Output the user's Account Summary.
     A GUI will replace this CLI display in a later phase.
     """
     gillpay = GillPayService()
     gillpay.GetTransactionSummary()
 
 
-def HandleReport(reportType: str):
+def HandleReport(reportType):
     """
-    Display the report for all expenses by category from highest
+    Displays the report for all expenses by category from highest
     to lowest total
     """
     gillpay = GillPayService()
     gillpay.GenerateReport(reportType)
+
+def GillPayLogo():
+    """
+    Creates GillPay logo whenever user exits out of the application
+    """
+    print("             /`·.¸")
+    print("            /¸...¸`:·")
+    print("       ¸.·´  ¸   `·.¸.·´)")
+    print("      : © ):´;      ¸  {")
+    print("       `·.¸ `·  ¸.·´\\`·¸)")
+    print("           `\\´´\\¸.·´")
 
 
 def main():
@@ -81,6 +96,8 @@ def main():
     Will be replaced by GUI in later phases.
     """
     gillPayIsRunning = True
+
+    # Keeps application running until user exits out of application (5)
     while gillPayIsRunning:
         print()
         print("Please make a choice:")
@@ -94,6 +111,7 @@ def main():
             userChoice = int(input("Action: "))
         except ValueError:
             print()
+            # Handles error if user enters a non-numeric value
             print(f"You entered invalid data!")
             print("Please enter value 1 - 5")
             continue
@@ -109,9 +127,11 @@ def main():
         elif userChoice == 5:
             gillPayIsRunning = False
         else:
+            # Informs user that invalid numeric value was entered
             print("Invalid choice, please select value 1 - 5.")
 
     print("Thank you for using GillPay for your finance tracking needs!")
+    GillPayLogo()
 
 
 if __name__ == '__main__':

@@ -1,15 +1,13 @@
-# AUTHOR: Matthew Bennett
-# DATE: 12SEP2025
-# PROGRAM: TransactionDAO
-# PURPOSE: Data access layer of GillPay application that handles the read
-#          and write operations to the application CSV.
-# INPUT: Transaction data passed in by clients.
-# PROCESS:
-#   - Read CSV using Pandas for simple querying.
-#   - Write CSV using csv module for simple appends.
-# OUTPUT: Returns a list of Transaction when getting data.
-# HONOR CODE: On my honor, as an Aggie, I have neither given nor received
-# unauthorized aid on this academic work.
+# PROGRAM:     TransactionDAO
+# AUTHOR:      Team 7
+# PURPOSE:     Data access layer of GillPay application that handles the read
+#                  and write operations to the application CSV.
+# INPUT:       Transaction data passed in by clients.
+# PROCESS:     - Read CSV using Pandas for simple querying.
+#              - Write CSV using csv module for simple appends.
+# OUTPUT:      Returns a list of Transaction when getting data.
+# HONOR CODE:  On my honor, as an Aggie, I have neither given nor received
+#                  unauthorized aid on this academic work.
 
 import csv
 from pathlib import Path
@@ -26,6 +24,9 @@ _DATE_IN_FORMATS = ("%Y/%m/%d", "%m/%d/%Y", "%Y-%m-%d", "%m-%d-%Y")
 
 
 def _normalize_date_str(s: str) -> str:
+    """
+    Normalize the date string value to ensure data maintain proper formatting
+    """
     s = (s or "").strip()
     if not s:
         return ""
@@ -66,9 +67,11 @@ class TransactionDAO:
         # String path for Pandas and callers that expect a str
         self.datasource = str(self.csv_path)
 
-    # ---------- Reads ----------
-
     def GetDataFrame(self) -> DataFrame:
+        """
+        Reads the configured CSV file, normalizes the data, and returns a
+        DataFrame
+        """
 
         try:
             df = pd.read_csv(self.datasource, dtype=str)  # everything as string
@@ -93,7 +96,9 @@ class TransactionDAO:
         return df
 
     def GetTransactions(self) -> list[Transaction]:
-        """Return all transactions as Transaction objects."""
+        """
+        Return all transactions as Transaction objects.
+        """
         df = self.GetDataFrame()
         return self.ConvertToTransactionList(df.values.tolist())
 
@@ -114,10 +119,10 @@ class TransactionDAO:
         rows = df[df[column_name] == column_value].values.tolist()
         return self.ConvertToTransactionList(rows)
 
-    # ---------- Writes ----------
-
     def SaveTransaction(self, tx: Transaction) -> None:
-        """Append a Transaction to the CSV using the canonical column order."""
+        """
+        Append a Transaction to the CSV using the canonical column order.
+        """
         row = [
             str(tx.transaction),
             str(tx.category),
@@ -130,7 +135,9 @@ class TransactionDAO:
             writer.writerow(row)
 
     def SaveTransactions(self, transactions: Iterable[Transaction]) -> None:
-        """Append multiple transactions efficiently."""
+        """
+        Takes in a list of Transactions and appends data to configure CSV file
+        """
         if not transactions:
             return
         with self.csv_path.open("a", newline="", encoding="utf-8") as csv_file:
@@ -144,10 +151,10 @@ class TransactionDAO:
                     _normalize_date_str(str(tx.date)),
                 ])
 
-    # ---------- Helpers ----------
-
     def ConvertToTransactionList(self, csv_rows) -> list[Transaction]:
-        """Convert list-of-lists rows to Transaction objects."""
+        """
+        Convert list-of-lists rows to a list of Transaction objects.
+        """
         items: list[Transaction] = []
         for r in csv_rows:
             items.append(
@@ -164,8 +171,7 @@ class TransactionDAO:
     def ExpenseByCategoryData(self):
         """
         Create an Expense by Category DataFrame so that information can be
-        passed
-        to client to be turned into a visualization
+        passed to client to be turned into a visualization
         """
         df = self.GetDataFrame()
         # Pull only expense items
@@ -181,7 +187,6 @@ class TransactionDAO:
         """
         Create a Summary by Month DataFrame so that information can be passed
         to client to be turned into a visualization
-        :return:
         """
         df = self.GetDataFrame()
         # Convert data column to datetime
