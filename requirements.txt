@@ -1,7 +1,9 @@
 # Core
 pandas>=2.0.0
 tkcalendar>=1.6.1
+prettytable>=3.0
+matplotlib>=3.8.0
+
 
 # Graphics / Visualization (future)
 Pillow>=10.0.0
-matplotlib>=3.8.0

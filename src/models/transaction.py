@@ -1,12 +1,22 @@
 # PROGRAM:     Transaction
+
 # AUTHOR:      Team 7
+
 # PURPOSE:     Core Data Model used for GillPay processes
+
 # INPUT:       Transaction values (Type, Category, Amount, Date)
+
 # PROCESS:     Acts as container of data representing a row of
-#                      data (Transaction)
+# data (Transaction)
+
 # OUTPUT:      Transaction Object
+
 # HONOR CODE:  On my honor, as an Aggie, I have neither given nor
-#               received unauthorized aid on this academic work.
+# received unauthorized aid on this academic work.
+
+# Gen AI: In keeping with my commitment to leverage advanced technology for
+# enhanced efficiency and accuracy in my work, I use generative artificial
+# intelligence tools to assist in writing my Python code.
 
 # src/transaction.py
 from dataclasses import dataclass

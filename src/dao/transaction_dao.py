@@ -1,32 +1,39 @@
-# PROGRAM:     TransactionDAO
-# AUTHOR:      Team 7
-# PURPOSE:     Data access layer of GillPay application that handles the read
-#                  and write operations to the application CSV.
-# INPUT:       Transaction data passed in by clients.
-# PROCESS:     - Read CSV using Pandas for simple querying.
-#              - Write CSV using csv module for simple appends.
-# OUTPUT:      Returns a list of Transaction when getting data.
-# HONOR CODE:  On my honor, as an Aggie, I have neither given nor received
-#                  unauthorized aid on this academic work.
+# AUTHOR: Matthew Bennett
+
+# DATE: 12SEP2025
+
+# PROGRAM: TransactionDAO
+
+# PURPOSE: Data access layer of GillPay application that handles the read
+# and write operations to the application CSV.
+
+# INPUT: Transaction data passed in by clients.
+
+# PROCESS:
+# - Read CSV using Pandas for simple querying.
+# - Write CSV using csv module for simple appends.
+
+# OUTPUT: Returns a list of Transaction when getting data.
+
+# HONOR CODE: On my honor, as an Aggie, I have neither given nor received
+# unauthorized aid on this academic work.
+
+# Gen AI: In keeping with my commitment to leverage advanced technology for
+# enhanced efficiency and accuracy in my work, I use generative artificial
+# intelligence tools to assist in writing my Python code.
 
 import csv
 from pathlib import Path
 from typing import Iterable
-
 import pandas as pd
 from pandas import DataFrame
-
 from src.models.transaction import Transaction
-
 from datetime import datetime
 
 _DATE_IN_FORMATS = ("%Y/%m/%d", "%m/%d/%Y", "%Y-%m-%d", "%m-%d-%Y")
 
 
 def _normalize_date_str(s: str) -> str:
-    """
-    Normalize the date string value to ensure data maintain proper formatting
-    """
     s = (s or "").strip()
     if not s:
         return ""
@@ -53,7 +60,6 @@ class TransactionDAO:
         Ensure the file exists with the correct header.
         """
         if datasource is None:
-            # <repo>/src/... -> parent(2) is <repo>
             repo_root = Path(__file__).resolve().parents[2]
             self.csv_path = repo_root / "data" / "gillpay_data.csv"
         else:
@@ -67,11 +73,9 @@ class TransactionDAO:
         # String path for Pandas and callers that expect a str
         self.datasource = str(self.csv_path)
 
+    # ---------- Reads ----------
+
     def GetDataFrame(self) -> DataFrame:
-        """
-        Reads the configured CSV file, normalizes the data, and returns a
-        DataFrame
-        """
 
         try:
             df = pd.read_csv(self.datasource, dtype=str)  # everything as string
@@ -96,9 +100,7 @@ class TransactionDAO:
         return df
 
     def GetTransactions(self) -> list[Transaction]:
-        """
-        Return all transactions as Transaction objects.
-        """
+        """Return all transactions as Transaction objects."""
         df = self.GetDataFrame()
         return self.ConvertToTransactionList(df.values.tolist())
 
@@ -119,10 +121,10 @@ class TransactionDAO:
         rows = df[df[column_name] == column_value].values.tolist()
         return self.ConvertToTransactionList(rows)
 
+    # ---------- Writes ----------
+
     def SaveTransaction(self, tx: Transaction) -> None:
-        """
-        Append a Transaction to the CSV using the canonical column order.
-        """
+        """Append a Transaction to the CSV using the canonical column order."""
         row = [
             str(tx.transaction),
             str(tx.category),
@@ -135,9 +137,7 @@ class TransactionDAO:
             writer.writerow(row)
 
     def SaveTransactions(self, transactions: Iterable[Transaction]) -> None:
-        """
-        Takes in a list of Transactions and appends data to configure CSV file
-        """
+        """Append multiple transactions efficiently."""
         if not transactions:
             return
         with self.csv_path.open("a", newline="", encoding="utf-8") as csv_file:
@@ -151,10 +151,10 @@ class TransactionDAO:
                     _normalize_date_str(str(tx.date)),
                 ])
 
+    # ---------- Helpers ----------
+
     def ConvertToTransactionList(self, csv_rows) -> list[Transaction]:
-        """
-        Convert list-of-lists rows to a list of Transaction objects.
-        """
+        """Convert list-of-lists rows to Transaction objects."""
         items: list[Transaction] = []
         for r in csv_rows:
             items.append(
@@ -168,10 +168,11 @@ class TransactionDAO:
             )
         return items
 
-    def ExpenseByCategoryData(self):
+    def ExpenseByCategoryData(self) -> DataFrame:
         """
         Create an Expense by Category DataFrame so that information can be
-        passed to client to be turned into a visualization
+        passed
+        to client to be turned into a visualization
         """
         df = self.GetDataFrame()
         # Pull only expense items
@@ -183,24 +184,42 @@ class TransactionDAO:
         # Sorting items in the amount
         return report.sort_values(by="amount", ascending=False)
 
-    def SummaryByMonthData(self):
+    def SummaryByMonthData(self) -> DataFrame:
         """
-        Create a Summary by Month DataFrame so that information can be passed
-        to client to be turned into a visualization
+        Return DataFrame with columns: month ('FullMonth YYYY'), income, expense, net.
+        Months are normalized and sorted chronologically here so the UI
+        can just consume in order with no extra parsing/sorting.
         """
-        df = self.GetDataFrame()
-        # Convert data column to datetime
-        df['date'] = pd.to_datetime(df['date'], format='%Y/%m/%d')
+        df = self.GetDataFrame().copy()
 
-        # Extract month-year for grouping
-        df['month'] = df['date'].dt.to_period('M')
+        # Normalize transaction labels to lowercase so unstack yields 'income'/'expense'
+        df.loc[:, "transaction"] = df["transaction"].astype(
+            str).str.strip().str.lower()
 
-        # Group income and expense data by month and sum data
-        monthly_type = df.groupby(["month", "transaction"])[
-            "amount"].sum().unstack(fill_value=0)
+        # Dates are already 'YYYY/MM/DD' from GetDataFrame()
+        dt = pd.to_datetime(df["date"], format="%Y/%m/%d", errors="coerce")
+        df = df.loc[dt.notna()].copy()
+        df.loc[:, "__month"] = dt.dt.to_period("M")
 
-        # Calculate Net based on income and expense
-        monthly_type["net"] = monthly_type["income"] - monthly_type["expense"]
+        # Aggregate income/expense by month
+        gb = df.groupby(["__month", "transaction"], observed=True)["amount"].sum()
+        pt = gb.unstack(fill_value=0.0)  # columns are exactly ['income','expense'] after the normalization above
 
-        # Reset index for iteration
-        return monthly_type.reset_index()
+        # Ensure columns exist and types are numeric
+        for col in ("income", "expense"):
+            if col not in pt.columns:
+                pt[col] = 0.0
+        pt = pt.astype({"income": "float64", "expense": "float64"}, errors="ignore")
+
+        # Net
+        pt.loc[:, "net"] = pt["income"] - pt["expense"]
+
+        # Flatten, sort, and build a safe copy before adding new columns
+        out = pt.reset_index().sort_values("__month").copy()
+        # Friendly month label so tab_report_month can sort with "%B %Y"
+        out.loc[:, "month"] = out["__month"].dt.to_timestamp().dt.strftime("%B %Y")
+
+        # Final column order (split into two steps)
+        out = out.drop(columns="__month")
+        out = out.loc[:, ["month", "income", "expense", "net"]]
+        return out

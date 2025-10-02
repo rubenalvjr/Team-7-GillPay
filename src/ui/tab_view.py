@@ -1,32 +1,67 @@
-# PROGRAM:     GillPayService
-# PURPOSE:     Contains core business logic for GillPay application
-# INPUT:       Takes in input/requests from GillPay GUI
-# PROCESS:     Takes request data form GillPay GUI and processes it by
-#                  performing data validation and interacting with data
-#                  access layer
-# OUTPUT:      Output is based on required data needed by user GUI interactions
-# HONOR CODE:  On my honor, as an Aggie, I have neither given nor
-#               received unauthorized aid on this academic work.
+# PROGRAM: Tab View
+
+# PURPOSE: Contains core business logic for GillPay application
+
+# INPUT: Takes in input/requests from GillPay GUI
+
+# PROCESS: Takes request data form GillPay GUI and processes it by performing
+# data validation and interacting with data access layer
+
+# OUTPUT: Output is based on required data needed by user GUI interactions
+
+# HONOR CODE:  On my honor, as an Aggie, I have neither given nor received
+# unauthorized aid on this academic work.
+
+# Gen AI: In keeping with my commitment to leverage advanced technology for
+# enhanced efficiency and accuracy in my work, I use generative artificial
+# intelligence tools to assist in writing my Python code.
 
 # src/ui/tab_view.py
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
 from src.dao.transaction_dao import TransactionDAO
+from src.categories import AllowedCategoriesForType
+
 
 class ViewTransactionsTab(ttk.Frame):
     def __init__(self, parent, dao: TransactionDAO, on_refresh=None):
         super().__init__(parent, padding=12)
         self.Dao = dao
-        # callback to update summary in the app
         self.OnRefresh = on_refresh
 
-        # Top bar
+    # Top bar: filters + refresh
         bar = ttk.Frame(self)
-        bar.grid(row=0, column=0, sticky="w", pady=(0, 8))
-        ttk.Button(bar, text="Refresh", style="Gill.TButton", command=self.LoadData).grid(row=0, column=0, padx=(0, 8))
+        bar.grid(row=0, column=0, sticky="we", pady=(0, 8))
+        bar.columnconfigure(5, weight=1)
 
-        # Table
+        ttk.Label(bar, text="Type:").grid(row=0, column=0, sticky="e", padx=(0, 6))
+        self.TypeFilterVar = tk.StringVar(value="All")
+        self.TypeFilter = ttk.Combobox(
+            bar,
+            textvariable=self.TypeFilterVar,
+            state="readonly",
+            values=["All", "Income", "Expense"],
+            width=12,
+        )
+        self.TypeFilter.grid(row=0, column=1, sticky="w", padx=(0, 12))
+
+        ttk.Label(bar, text="Category:").grid(row=0, column=2, sticky="e", padx=(0, 6))
+        self.CategoryFilterVar = tk.StringVar(value="All")
+        self.CategoryFilter = ttk.Combobox(bar, textvariable=self.CategoryFilterVar, state="readonly", width=22)
+        self.CategoryFilter.grid(row=0, column=3, sticky="w", padx=(0, 12))
+
+    # Initialize Category list and set up listeners
+        self._RefreshCategoryFilter()
+        self.TypeFilterVar.trace_add("write", lambda *_: self._OnTypeFilterChanged())
+        self.CategoryFilterVar.trace_add("write", lambda *_: self.LoadData())
+
+        ttk.Button(bar, text="Refresh", style="Gill.TButton", command=self.LoadData).grid(
+            row=0, column=4, padx=(0, 8)
+        )
+
+    # Table
         self.Columns = ("transaction", "category", "description", "amount", "date")
         self.Tree = ttk.Treeview(self, columns=self.Columns, show="headings", height=16, style="Gill.Treeview")
 
@@ -37,60 +72,80 @@ class ViewTransactionsTab(ttk.Frame):
             "amount": "Amount",
             "date": "Date",
         }
+
         for key, label in headings.items():
             self.Tree.heading(key, text=label, command=lambda c=key: self.SortBy(c, False), anchor="w")
-
             if key == "amount":
-                self.Tree.column(key, width=110, anchor="e")  # right-align amount
+                self.Tree.column(key, width=110, anchor="e")
             elif key == "description":
                 self.Tree.column(key, width=260, anchor="w")
             else:
                 self.Tree.column(key, width=140, anchor="w")
 
-        # Zebra rows (Treeview bg comes from theme)
+    # Every time I see 'evenrow' I think of 'Even Flow' by Pearl Jam and start humming to myself
         self.Tree.tag_configure("oddrow", background="#F6F9FC")
-        self.Tree.tag_configure("evenrow", background="#FFFFFF")
-
-        # Scrollbars
-        xscroll = ttk.Scrollbar(self, orient="horizontal", command=self.Tree.xview)
-        yscroll = ttk.Scrollbar(self, orient="vertical", command=self.Tree.yview)
-        self.Tree.configure(xscrollcommand=xscroll.set, yscrollcommand=yscroll.set)
-
+        self.Tree.tag_configure("evenrow", background="")
         self.Tree.grid(row=1, column=0, sticky="nsew")
-        yscroll.grid(row=1, column=1, sticky="ns")
-        xscroll.grid(row=2, column=0, sticky="ew")
-
-        self.columnconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
+        self.columnconfigure(0, weight=1)
 
-        # Initial load
+    # Initial load
         self.LoadData()
 
+    # Filter helpers
+    def _OnTypeFilterChanged(self):
+        """When Type changes, rebuild Category filter list and reload table."""
+        self._RefreshCategoryFilter()
+        self.LoadData()
+
+    def _RefreshCategoryFilter(self):
+        """Set Category options based on current Type filter, include 'All'."""
+        typ = (self.TypeFilterVar.get() or "All").strip()
+        if typ == "All":
+            income = AllowedCategoriesForType("income")
+            expense = AllowedCategoriesForType("expense")
+            vals = ["All"] + income + [c for c in expense if c not in income]
+        else:
+            vals = ["All"] + AllowedCategoriesForType(typ)
+
+        self.CategoryFilter["values"] = vals
+        cur = self.CategoryFilterVar.get()
+        self.CategoryFilterVar.set(cur if cur in vals else "All")
+
+    # Data loading + rendering
     def LoadData(self):
-        """Load data from DAO into the Treeview; then notify parent for summary refresh."""
+        """Load DataFrame from DAO, apply filters, then render into the Treeview."""
         try:
             df = self.Dao.GetDataFrame()
         except Exception as ex:
             messagebox.showerror("Load Failed", f"Could not load transactions:\n{ex}")
             return
 
-        # Clear table
+    # Clear table
         for iid in self.Tree.get_children():
             self.Tree.delete(iid)
 
         if df is None or df.empty:
             if callable(self.OnRefresh):
-                self.OnRefresh()
+                self.OnRefresh(df)
             return
 
-        # Ensure columns exist/order (defensive)
+    # Ensure expected columns exist/order
         expected = list(self.Columns)
         for c in expected:
             if c not in df.columns:
                 df[c] = "" if c != "amount" else 0.0
-        df = df[expected]
+        df = df.loc[:, expected].copy()
 
-        # Insert rows; amount as 2 decimals
+    # Apply filters
+        typ = (self.TypeFilterVar.get() or "All").strip()
+        cat = (self.CategoryFilterVar.get() or "All").strip()
+        if typ != "All":
+            df = df[df["transaction"].str.lower() == typ.lower()]
+        if cat != "All":
+            df = df[df["category"] == cat]
+
+    # Insert rows; amount as 2 decimals
         for i, (_, row) in enumerate(df.iterrows()):
             values = (
                 str(row["transaction"]),
@@ -99,23 +154,38 @@ class ViewTransactionsTab(ttk.Frame):
                 f"{float(row['amount']):.2f}",
                 str(row["date"]),
             )
+
+    # Eeeeven flooowwww thoughts arrive like butterflies!!
             tag = "evenrow" if i % 2 == 0 else "oddrow"
             self.Tree.insert("", "end", values=values, tags=(tag,))
 
-        # Let the app recompute its summary totals now that rows are current
+    # Update the summary bar with the FILTERED results
         if callable(self.OnRefresh):
-            self.OnRefresh()
+            self.OnRefresh(df)
 
+    # Sorting
     def SortBy(self, column: str, descending: bool):
-        """Sort the Treeview rows; keeps numeric sort for Amount."""
-        data = [(self.Tree.set(k, column), k) for k in self.Tree.get_children("")]
-        if column == "amount":
-            try:
-                data = [(float(v), k) for v, k in data]
-            except ValueError:
-                # fallback to string sort if any malformed values
-                data = [(self.Tree.set(k, column), k) for k in self.Tree.get_children("")]
-        data.sort(reverse=descending)
-        for idx, (_, k) in enumerate(data):
-            self.Tree.move(k, "", idx)
+        """Sort the Treeview rows. Numeric for Amount, chronological for Date."""
+        rows = self.Tree.get_children("")
+
+        def key_func(item_id):
+            v = self.Tree.set(item_id, column)
+            if column == "amount":
+                try:
+                    return float(v)
+                except Exception:
+                    return float("inf")
+            if column == "date":
+                try:
+                    return datetime.strptime(v, "%Y/%m/%d")
+                except Exception:
+                    return datetime.max
+            return v.lower() if isinstance(v, str) else v
+
+        sorted_rows = sorted(rows, key=key_func, reverse=descending)
+
+        for idx, iid in enumerate(sorted_rows):
+            self.Tree.move(iid, "", idx)
+            self.Tree.item(iid, tags=("evenrow" if idx % 2 == 0 else "oddrow",))
+
         self.Tree.heading(column, command=lambda: self.SortBy(column, not descending))

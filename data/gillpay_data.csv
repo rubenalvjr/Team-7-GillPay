@@ -1,17 +1,293 @@
 transaction,category,description,amount,date
-income,paycheck,paycheck,2500,2025/09/12
-expense,food,beans and rice,250,2025/09/12
-expense,food,tacos,14,2025/09/12
-income,monies,gold coins,240,2025/09/12
-income,monies,more monies,150,2025/09/12
-expense,clothes,shoes and socks,200,2025/09/12
-income,paycheck,paycheck,1500,2025/09/12
-expense,food,Red Lobster,134.22,2025/09/12
-expense,tools,tools for job,350.45,2025/09/12
-income,payday,joyous celebration for more monies,204.58,2025/09/12
-expense,food,Los Tios,47.4,2025/09/12
-income,Mum,Too cheap,100.0,2025/09/13
-income,test,this is a test,200.0,2025/09/18
-income,test,this is another test,300.0,2025/09/18
-expense,test 34,this is one last test,4300.0,2025/09/18
-income,payyay!,all the monies,40000.0,2025/09/18
+expense,Personal,Gym Membership,99.08,4/1/2025
+expense,Bills,Rent,2237,4/1/2025
+expense,Food,Coffee,14.74,4/2/2025
+expense,Entertainment,Streaming Subscription,78.39,4/2/2025
+expense,Savings,Vacation Fund,534.42,4/2/2025
+expense,Food,Dinner Out,69.84,4/3/2025
+expense,Transportation,Parking,79.64,4/3/2025
+income,Salary,HQ Paycheck,4425.98,4/4/2025
+expense,Personal,Pharmacy,151.36,4/4/2025
+expense,Savings,Vacation Fund,444.79,4/5/2025
+expense,Entertainment,Concert Tickets,161.38,4/7/2025
+expense,Transportation,Rideshare,96.08,4/7/2025
+expense,Food,Dinner Out,98.71,4/8/2025
+expense,Savings,Emergency Fund,452.28,4/8/2025
+expense,Transportation,Car Wash,52.48,4/10/2025
+expense,Transportation,Maintenance,41.86,4/10/2025
+income,Other,Refund,527.14,4/10/2025
+expense,Food,Coffee,14.74,4/11/2025
+expense,Food,Groceries,8.13,4/11/2025
+expense,Transportation,Car Wash,52.48,4/12/2025
+expense,Loans,Credit Card Payment,527.72,4/12/2025
+expense,Food,Tacos,61.16,4/12/2025
+expense,Entertainment,Movie Night,147.85,4/13/2025
+expense,Food,Coffee,14.74,4/14/2025
+expense,Entertainment,Concert Tickets,171.32,4/14/2025
+expense,Bills,Internet Bill,57.04,4/14/2025
+expense,Transportation,Rideshare,15.99,4/17/2025
+expense,Bills,Water Bill,62.39,4/17/2025
+expense,Loans,Car Payment,512.68,4/18/2025
+income,Salary,Direct Deposit,3960.9,4/18/2025
+expense,Food,Groceries,102.56,4/19/2025
+expense,Food,Tacos,48.79,4/20/2025
+expense,Food,Coffee,14.74,4/21/2025
+expense,Healthcare,Dental Cleaning,211.01,4/22/2025
+expense,Bills,Electric Bill,130.26,4/22/2025
+expense,Food,Tacos,87.82,4/22/2025
+expense,Food,Coffee,14.74,4/23/2025
+expense,Personal,Haircut,107.64,4/23/2025
+expense,Entertainment,Concert Tickets,106.53,4/25/2025
+expense,Food,Dinner Out,82.02,4/26/2025
+expense,Transportation,Parking,65.54,4/26/2025
+expense,Loans,Credit Card Payment,552.79,4/28/2025
+expense,Transportation,Gas,124.7,4/28/2025
+expense,Other,Gift,118.07,4/28/2025
+expense,Savings,529 Contribution,553.88,4/29/2025
+expense,Entertainment,Game Purchase,86.54,4/29/2025
+income,Investments,ETF Payout,265.48,4/30/2025
+expense,Entertainment,Game Purchase,128.88,5/1/2025
+expense,Bills,Rent,2237,5/1/2025
+income,Salary,Direct Deposit,4336.18,5/2/2025
+expense,Food,Lunch Out,76.22,5/2/2025
+expense,Transportation,Rideshare,51.39,5/2/2025
+expense,Entertainment,Streaming Subscription,13.8,5/2/2025
+expense,Savings,529 Contribution,553.88,5/3/2025
+expense,Bills,Electric Bill,162.17,5/3/2025
+expense,Healthcare,OTC Meds,111.31,5/4/2025
+expense,Food,Dinner Out,102.62,5/5/2025
+expense,Other,Gift,140.47,5/5/2025
+expense,Bills,Electric Bill,104.15,5/6/2025
+expense,Personal,Haircut,207.43,5/7/2025
+expense,Transportation,Maintenance,74.97,5/7/2025
+expense,Food,Tacos,13.36,5/7/2025
+expense,Food,Coffee,14.74,5/8/2025
+expense,Entertainment,Game Purchase,79.46,5/8/2025
+expense,Food,Lunch Out,74.48,5/8/2025
+expense,Bills,Water Bill,42.19,5/8/2025
+expense,Transportation,Car Wash,52.48,5/11/2025
+expense,Transportation,Rideshare,86.55,5/11/2025
+expense,Personal,Clothes,104.84,5/12/2025
+expense,Transportation,Gas,133.68,5/15/2025
+income,Salary,Direct Deposit,4333.75,5/16/2025
+expense,Food,Coffee,14.74,5/17/2025
+expense,Food,Coffee,14.74,5/18/2025
+expense,Savings,Vacation Fund,522.23,5/18/2025
+expense,Entertainment,Concert Tickets,175.14,5/20/2025
+expense,Healthcare,Copay,50.25,5/20/2025
+expense,Food,Groceries,38.93,5/20/2025
+expense,Other,Side Gig Payment,23.28,5/20/2025
+expense,Loans,Credit Card Payment,221.24,5/21/2025
+expense,Bills,Electric Bill,156.81,5/21/2025
+expense,Bills,Internet Bill,85.62,5/22/2025
+expense,Transportation,Car Wash,52.48,5/23/2025
+expense,Food,Tacos,121.03,5/23/2025
+expense,Food,Groceries,24.34,5/25/2025
+expense,Food,Coffee,14.74,5/26/2025
+expense,Food,Lunch Out,124.4,5/26/2025
+expense,Transportation,Parking,53.21,5/27/2025
+expense,Savings,Vacation Fund,655.36,5/28/2025
+expense,Healthcare,Dental Cleaning,219.73,5/29/2025
+expense,Personal,Clothes,162.6,5/30/2025
+income,Salary,Direct Deposit,3916.91,5/30/2025
+expense,Transportation,Parking,31.79,5/31/2025
+expense,Food,Dinner Out,113.78,6/1/2025
+expense,Bills,Rent,2237,6/1/2025
+expense,Loans,Credit Card Payment,277.24,6/3/2025
+expense,Food,Lunch Out,121.06,6/6/2025
+expense,Entertainment,Streaming Subscription,129.92,6/6/2025
+expense,Bills,Cell Phone Bill,110.86,6/7/2025
+expense,Entertainment,Game Purchase,133.75,6/7/2025
+expense,Food,Groceries,63.35,6/7/2025
+expense,Transportation,Parking,53.15,6/8/2025
+expense,Transportation,Rideshare,95.8,6/8/2025
+expense,Other,Side Gig Payment,59.35,6/8/2025
+expense,Personal,Clothes,116.29,6/10/2025
+expense,Transportation,Parking,34.69,6/10/2025
+expense,Savings,Transfer to Savings,530.29,6/12/2025
+expense,Healthcare,Vision Exam,59.59,6/12/2025
+income,Salary,Direct Deposit,4208.44,6/13/2025
+expense,Bills,Water Bill,40.21,6/13/2025
+expense,Food,Coffee,14.74,6/14/2025
+expense,Food,Lunch Out,25.68,6/14/2025
+expense,Transportation,Parking,125.52,6/14/2025
+expense,Bills,Internet Bill,77.41,6/15/2025
+expense,Food,Lunch Out,133.59,6/15/2025
+expense,Transportation,Car Wash,52.48,6/16/2025
+expense,Healthcare,OTC Meds,162.06,6/16/2025
+expense,Savings,Vacation Fund,527.51,6/16/2025
+expense,Food,Tacos,129.73,6/17/2025
+expense,Food,Dinner Out,83.7,6/18/2025
+expense,Entertainment,Game Purchase,125.78,6/18/2025
+expense,Food,Tacos,86.62,6/18/2025
+expense,Food,Coffee,14.74,6/19/2025
+expense,Entertainment,Concert Tickets,135.59,6/21/2025
+expense,Healthcare,Copay,50.25,6/21/2025
+expense,Food,Dinner Out,23.77,6/22/2025
+expense,Food,Dinner Out,136.43,6/23/2025
+expense,Personal,Haircut,122.68,6/23/2025
+expense,Food,Lunch Out,116.08,6/23/2025
+expense,Food,Lunch Out,43.59,6/23/2025
+expense,Savings,529 Contribution,553.88,6/25/2025
+expense,Bills,Internet Bill,88.65,6/26/2025
+expense,Food,Lunch Out,83.71,6/26/2025
+income,Salary,Direct Deposit,4101.08,6/27/2025
+expense,Food,Dinner Out,35.9,6/28/2025
+expense,Transportation,Parking,135.24,6/28/2025
+expense,Food,Tacos,35.27,6/28/2025
+expense,Food,Dinner Out,15.92,6/29/2025
+expense,Transportation,Maintenance,98.07,6/29/2025
+expense,Transportation,Maintenance,93.85,6/29/2025
+expense,Entertainment,Streaming Subscription,139.08,6/29/2025
+income,Investments,ETF Payout,222.47,6/30/2025
+expense,Personal,Haircut,193.28,6/30/2025
+expense,Transportation,Car Wash,52.48,7/1/2025
+expense,Bills,Rent,2237,7/1/2025
+expense,Healthcare,Dental Cleaning,114.68,7/4/2025
+expense,Food,Groceries,66.43,7/4/2025
+expense,Personal,Pharmacy,104.97,7/4/2025
+expense,Food,Coffee,14.74,7/5/2025
+expense,Other,Side Gig Payment,44.92,7/5/2025
+expense,Food,Lunch Out,71.41,7/6/2025
+expense,Bills,Cell Phone Bill,110.86,7/7/2025
+expense,Food,Groceries,92.96,7/8/2025
+expense,Food,Coffee,14.74,7/9/2025
+expense,Loans,Credit Card Payment,504.36,7/9/2025
+expense,Bills,Electric Bill,148.37,7/9/2025
+expense,Food,Coffee,14.74,7/10/2025
+expense,Transportation,Gas,79.86,7/10/2025
+income,Salary,Direct Deposit,4210.71,7/11/2025
+expense,Savings,Transfer to Savings,427.14,7/11/2025
+expense,Savings,Emergency Fund,625.87,7/12/2025
+expense,Food,Dinner Out,34.54,7/14/2025
+expense,Healthcare,Pharmacy,99.28,7/14/2025
+expense,Transportation,Car Wash,52.48,7/15/2025
+expense,Personal,Haircut,160.68,7/15/2025
+expense,Transportation,Maintenance,86.29,7/16/2025
+expense,Food,Lunch Out,122.9,7/17/2025
+expense,Entertainment,Movie Night,154.46,7/17/2025
+expense,Transportation,Parking,101.7,7/17/2025
+expense,Transportation,Rideshare,41.71,7/18/2025
+expense,Transportation,Maintenance,42.59,7/19/2025
+expense,Bills,Cell Phone Bill,110.86,7/20/2025
+expense,Food,Groceries,100.6,7/21/2025
+expense,Entertainment,Game Purchase,137.53,7/22/2025
+expense,Food,Tacos,117.44,7/22/2025
+expense,Food,Groceries,16.31,7/23/2025
+expense,Loans,Student Loan,386.69,7/23/2025
+expense,Food,Tacos,31.17,7/23/2025
+expense,Food,Coffee,14.74,7/24/2025
+expense,Food,Dinner Out,49.27,7/24/2025
+income,Salary,HQ Paycheck,4362.32,7/25/2025
+expense,Transportation,Maintenance,42.24,7/26/2025
+expense,Transportation,Rideshare,78.03,7/26/2025
+expense,Food,Tacos,126.9,7/26/2025
+expense,Food,Lunch Out,31.6,7/27/2025
+expense,Bills,Water Bill,57.31,7/27/2025
+expense,Entertainment,Streaming Subscription,167.84,7/28/2025
+expense,Savings,529 Contribution,553.88,7/29/2025
+expense,Entertainment,Concert Tickets,28.32,7/29/2025
+expense,Food,Lunch Out,34.27,7/29/2025
+expense,Healthcare,Pharmacy,98.9,7/29/2025
+expense,Entertainment,Game Purchase,198.71,7/30/2025
+expense,Personal,Pharmacy,132.29,7/30/2025
+income,Investments,ETF Payout,243.45,7/31/2025
+expense,Entertainment,Game Purchase,140.94,7/31/2025
+expense,Transportation,Car Wash,52.48,8/1/2025
+expense,Bills,Rent,2237,8/1/2025
+expense,Food,Tacos,20.48,8/1/2025
+expense,Loans,Car Payment,512.68,8/2/2025
+expense,Food,Dinner Out,125.27,8/3/2025
+expense,Transportation,Parking,61.41,8/4/2025
+expense,Food,Tacos,51.76,8/5/2025
+expense,Bills,Electric Bill,120.33,8/6/2025
+expense,Personal,Pharmacy,67.8,8/6/2025
+expense,Bills,Electric Bill,177.08,8/7/2025
+expense,Bills,Internet Bill,91.02,8/7/2025
+expense,Other,Side Gig Payment,72.41,8/7/2025
+expense,Food,Tacos,12.61,8/7/2025
+expense,Personal,Clothes,116.36,8/8/2025
+expense,Bills,Electric Bill,129.74,8/8/2025
+income,Salary,HQ Paycheck,4394.85,8/8/2025
+income,Other,Side Gig Payment,188.87,8/8/2025
+expense,Food,Tacos,96.42,8/9/2025
+expense,Other,Gift,9.27,8/11/2025
+expense,Transportation,Rideshare,110.11,8/11/2025
+expense,Savings,Transfer to Savings,620.28,8/11/2025
+expense,Food,Coffee,14.74,8/12/2025
+expense,Savings,Emergency Fund,726.57,8/12/2025
+expense,Food,Tacos,18.87,8/12/2025
+expense,Entertainment,Concert Tickets,164.99,8/13/2025
+expense,Loans,Credit Card Payment,594.9,8/13/2025
+expense,Healthcare,Pharmacy,116.35,8/14/2025
+expense,Food,Coffee,14.74,8/19/2025
+expense,Savings,Vacation Fund,408.31,8/19/2025
+expense,Bills,Cell Phone Bill,110.86,8/20/2025
+expense,Food,Dinner Out,128.75,8/20/2025
+expense,Food,Coffee,14.74,8/21/2025
+expense,Transportation,Rideshare,120.11,8/21/2025
+income,Salary,Direct Deposit,4146.55,8/22/2025
+expense,Food,Lunch Out,106.27,8/22/2025
+expense,Healthcare,Pharmacy,123.39,8/22/2025
+expense,Transportation,Rideshare,38.21,8/23/2025
+expense,Savings,Emergency Fund,599.59,8/24/2025
+expense,Personal,Haircut,163.69,8/24/2025
+expense,Transportation,Parking,28.23,8/27/2025
+expense,Food,Coffee,14.74,8/28/2025
+expense,Food,Dinner Out,136.4,8/28/2025
+expense,Transportation,Gas,61.85,8/28/2025
+expense,Healthcare,OTC Meds,210.67,8/28/2025
+expense,Entertainment,Movie Night,65.93,8/29/2025
+expense,Food,Dinner Out,66.79,8/30/2025
+expense,Food,Lunch Out,130.14,8/30/2025
+expense,Food,Coffee,14.74,8/31/2025
+income,Investments,Interest Income,217.61,8/31/2025
+expense,Other,Side Gig Payment,57.58,8/31/2025
+expense,Bills,Rent,2237,9/1/2025
+expense,Food,Groceries,32.7,9/2/2025
+income,Other,Refund,351.87,9/2/2025
+expense,Food,Groceries,62.96,9/3/2025
+expense,Transportation,Rideshare,118.14,9/3/2025
+expense,Food,Tacos,20.67,9/4/2025
+income,Salary,HQ Paycheck,4415.23,9/5/2025
+expense,Transportation,Rideshare,19.33,9/6/2025
+expense,Personal,Clothes,247.06,9/8/2025
+expense,Food,Dinner Out,93.2,9/8/2025
+expense,Bills,Internet Bill,86.65,9/8/2025
+expense,Loans,Car Payment,512.68,9/9/2025
+expense,Transportation,Gas,102.27,9/9/2025
+expense,Personal,Clothes,216.87,9/10/2025
+expense,Healthcare,Urgent Care Visit,239.7,9/10/2025
+expense,Food,Coffee,14.74,9/11/2025
+expense,Food,Coffee,14.74,9/11/2025
+expense,Food,Lunch Out,42.49,9/12/2025
+expense,Entertainment,Movie Night,110.29,9/12/2025
+expense,Bills,Internet Bill,80.63,9/13/2025
+expense,Savings,Vacation Fund,537.96,9/13/2025
+expense,Savings,529 Contribution,553.88,9/14/2025
+expense,Food,Lunch Out,76.05,9/15/2025
+expense,Transportation,Car Wash,52.48,9/16/2025
+expense,Personal,Clothes,152.31,9/16/2025
+expense,Bills,Internet Bill,66.93,9/18/2025
+income,Salary,Direct Deposit,4253.89,9/19/2025
+expense,Transportation,Gas,133.34,9/19/2025
+expense,Other,Gift,14.78,9/20/2025
+expense,Personal,Clothes,183.26,9/21/2025
+expense,Food,Groceries,118.94,9/21/2025
+expense,Entertainment,Movie Night,144.44,9/21/2025
+expense,Food,Tacos,67.78,9/21/2025
+expense,Loans,Car Payment,512.68,9/22/2025
+expense,Transportation,Rideshare,64.54,9/22/2025
+expense,Personal,Haircut,25.1,9/23/2025
+expense,Food,Tacos,17.96,9/23/2025
+expense,Transportation,Gas,136.07,9/24/2025
+expense,Bills,Cell Phone Bill,110.86,9/26/2025
+expense,Entertainment,Movie Night,38.9,9/26/2025
+expense,Food,Coffee,14.74,9/27/2025
+expense,Bills,Electric Bill,91.83,9/27/2025
+expense,Transportation,Gas,81.27,9/27/2025
+expense,Food,Groceries,23.54,9/29/2025
+income,Investments,Interest Income,122.43,9/30/2025
+expense,Transportation,Parking,134.91,9/30/2025
+income,Investments,Small bond cashed and deposited,210,9/30/2025
+income,Salary,small bonus for doing a great job with the ui,150,9/30/2025

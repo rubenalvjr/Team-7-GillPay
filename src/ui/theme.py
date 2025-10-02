@@ -1,15 +1,44 @@
-# PROGRAM:     GillPayService
-# PURPOSE:     Contains core business logic for GillPay application
-# INPUT:       Takes in input/requests from GillPay GUI
-# PROCESS:     Takes request data form GillPay GUI and processes it by
-#                  performing data validation and interacting with data
-#                  access layer
-# OUTPUT:      Output is based on required data needed by user GUI interactions
-# HONOR CODE:  On my honor, as an Aggie, I have neither given nor
-#               received unauthorized aid on this academic work.
+# PROGRAM: Theme
+
+# PURPOSE: Used as core theming for application
+
+# INPUT: Takes in input/requests from GillPay GUI
+
+# PROCESS: Takes request data form GillPay GUI and processes it by performing
+# data validation and interacting with data access layer
+
+# OUTPUT: Output is based on required data needed by user GUI interactions
+
+# HONOR CODE:  On my honor, as an Aggie, I have neither given nor received
+# unauthorized aid on this academic work.
+
+# Gen AI: In keeping with my commitment to leverage advanced technology for
+# enhanced efficiency and accuracy in my work, I use generative artificial
+# intelligence tools to assist in writing my Python code.
+
+
+
 
 import tkinter as tk
 from tkinter import ttk
+
+
+#This is used for the turtle_visual.py file
+COLORS = {
+    "Navy": "#0B2545",
+    "Blue": "#13315C",
+    "Blue2": "#1D3557",
+    "Orange": "#F26419",
+    "TextOnDark": "#F5F7FA",
+    "TextOnLight": "#0B2545",
+    "Surface": "#E8EEF2",
+    "White": "#FFFFFF",
+    "Border": "#D1D9E0",
+    "Selection": "#F7A26E",
+    "Disabled": "#A8B3BF",
+}
+
+
 
 def ApplyTheme(root: tk.Tk):
     colors = {
@@ -91,6 +120,7 @@ def ApplyTheme(root: tk.Tk):
         "Gill.TNotebook.Tab",
         background=[("selected", colors["Navy"]), ("active", colors["Blue2"])],
         foreground=[("selected", colors["TextOnDark"]), ("disabled", colors["Disabled"])],
+        padding=[("selected", (14, 8)), ("active", (14, 8)), ("!selected", (12, 6))],
     )
 
     # Treeview (table)
@@ -120,7 +150,19 @@ def ApplyTheme(root: tk.Tk):
         background=[("active", colors["Blue"])],
         relief=[("pressed", "groove")],
     )
-
+    style.configure(
+        "Visualize.TButton",
+        background=colors["Navy"],
+        foreground=colors["White"],
+        font=("Segoe UI", 11, "bold"),
+        padding=(14, 8),
+        borderwidth=0,
+    )
+    style.map(
+        "Visualize.TButton",
+        background=[("active", colors["Blue2"]), ("pressed", colors["Orange"]), ("disabled", colors["Disabled"])],
+        foreground=[("disabled", colors["White"])],
+    )
     # Scrollbars (subtle to match Surface)
     style.configure("Vertical.TScrollbar", background=colors["Surface"], troughcolor=colors["Surface"], bordercolor=colors["Surface"])
     style.configure("Horizontal.TScrollbar", background=colors["Surface"], troughcolor=colors["Surface"], bordercolor=colors["Surface"])
