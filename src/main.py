@@ -1,29 +1,22 @@
-# AUTHOR: Team 7
+# AUTHOR: Team 7 Goofy Goldfishes
 
-# DATE: 28SEP2025
+# DATE: 02OCT2025
 
 # PROGRAM: Main
 
-# PURPOSE: Launches GillPay application (CLI) and light fun visualizations
+# PURPOSE: Launch GillPay (CLI) and simple visualizations or open the GUI.
 
-# INPUT: Asks for user input to create a transaction, view reports, or open a turtle chart
+# INPUT: User selections via CLI prompts.
 
-# PROCESS:
-# User selects 1 then inputs data to capture transaction
-# User selects 2 then account summary info is displayed
-# User selects 3 then Expense by Category Report is displayed
-# User selects 4 then Spending By Month Report is displayed
-# User selects 5 then Turtle chart opens (fun)
-# User selects 6 then application is closed (prints ASCII fish)
-# User selects 7 then application is closed (prints ASCII fish)
+# PROCESS: Route actions to service layer; validate inputs; render
+# summaries/reports.
 
-
-# OUTPUT: Successful transaction creation, account summary, reports, or a turtle chart
+# OUTPUT: Saved transactions, printed summaries/reports, or GUI launch.
 
 # HONOR CODE: On my honor, as an Aggie, I have neither given nor received
 # unauthorized aid on this academic work.
 
-# Gen AI: In keeping with my commitment to leverage advanced technology for
+# GEN AI: In keeping with my commitment to leverage advanced technology for
 # enhanced efficiency and accuracy in my work, I use generative artificial
 # intelligence tools to assist in writing my Python code.
 
@@ -35,27 +28,25 @@ from typing import Dict, Literal, Optional
 from src.gillpay_service import GillPayService
 from src.models.transaction import Transaction
 
-
 # Constants for report routing
 REPORT_EXP_BY_CAT: Literal["EXP_BY_CAT"] = "EXP_BY_CAT"
 REPORT_SUMMARY_BY_MONTH: Literal["SUMMARY_BY_MONTH"] = "SUMMARY_BY_MONTH"
 
-
-# ----------------------------
-# Utility: Validation helpers
-# ----------------------------
-
-_ALLOWED_DATE_FORMATS = [
-    "%Y/%m/%d",     # 2025/10/01
-    "%Y-%m-%d",     # 2025-10-01
-    "%m/%d/%Y",     # 10/01/2025
-    "%d %B %Y",     # 22 October 2025
-    "%d %b %Y",     # 22 Oct 2025
+# Validation helpers
+ALLOWED_DATE_FORMATS = [
+    "%Y/%m/%d",
+    "%Y-%m-%d",
+    "%m/%d/%Y",
+    "%d %B %Y",
+    "%d %b %Y",
 ]
 
-def _TryParseDate(Value: str) -> Optional[datetime]:
+
+def TryParseDate(Value: str) -> Optional[datetime]:
+    """Return a datetime if *Value* matches any allowed format; otherwise
+    None."""
     Clean = (Value or "").strip()
-    for Fmt in _ALLOWED_DATE_FORMATS:
+    for Fmt in ALLOWED_DATE_FORMATS:
         try:
             return datetime.strptime(Clean, Fmt)
         except ValueError:
@@ -64,23 +55,21 @@ def _TryParseDate(Value: str) -> Optional[datetime]:
 
 
 def IsValidDate(Value: str) -> bool:
-    """Accept several human-friendly formats, enforce not-in-future and sane lower bound."""
-    Dt = _TryParseDate(Value)
+    """Accept several formats; disallow future dates and dates before
+    1900-01-01."""
+    Dt = TryParseDate(Value)
     if not Dt:
         return False
     D = Dt.date()
-    if D.year < 1900:            # lower bound (keep 1900 to match rubric)
+    if D.year < 1900:
         return False
-    if D > date.today():         # no future dates
+    if D > date.today():
         return False
     return True
 
 
 def PromptAmount() -> float:
-    """
-    Prompt until a valid numeric, positive amount is entered.
-    This guarantees a re-prompt on strings like 'fifty dollars' or negative/zero values.
-    """
+    """Prompt until a valid positive numeric amount is entered."""
     while True:
         Raw = input("Transaction Amount (e.g., 12.50): ").strip()
         try:
@@ -94,18 +83,15 @@ def PromptAmount() -> float:
 
 
 def PromptDate() -> str:
-    """
-    Prompt until a valid date is entered:
-    - Accepts multiple formats (YYYY/MM/DD, YYYY-MM-DD, MM/DD/YYYY, '22 Oct 2025', '22 October 2025')
-    - Rejects dates before 1900-01-01
-    - Rejects future dates
-    - Normalizes to YYYY/MM/DD for storage
-    """
+    """Prompt until a valid date is entered; normalize to YYYY/MM/DD."""
     while True:
-        Value = input("Transaction Date (YYYY/MM/DD or '22 Oct 2025'): ").strip()
-        Dt = _TryParseDate(Value)
+        Value = input(
+            "Transaction Date (YYYY/MM/DD or '22 Oct 2025'): ").strip()
+        Dt = TryParseDate(Value)
         if not Dt:
-            print("Unrecognized date format. Try 2025/10/01, 10/01/2025, or '22 Oct 2025'.")
+            print(
+                "Unrecognized date format. Try 2025/10/01, 10/01/2025, "
+                "or '22 Oct 2025'.")
             continue
         D = Dt.date()
         if D.year < 1900:
@@ -127,7 +113,7 @@ def PromptTransactionType() -> str:
 
 
 def PromptCategory() -> str:
-    """Prompt for a non-empty category (free-form for now)."""
+    """Prompt for a non-empty category (free-form)."""
     while True:
         Value = input("Transaction Category: ").strip()
         if Value:
@@ -144,20 +130,10 @@ def PromptDescription() -> str:
         print("Description cannot be empty.")
 
 
-# ----------------------------
 # Core CLI actions
-# ----------------------------
 
 def HandleTransaction() -> None:
-    """
-    Handle input of a transaction (expense or income) and persist it via the service.
-
-    Side Effects:
-        Prompts for input and prints status messages.
-
-    Raises:
-        Exceptions are caught and printed so the CLI remains responsive.
-    """
+    """Collect a transaction from the user and persist it via the service."""
     try:
         GillPay = GillPayService()
 
@@ -181,17 +157,12 @@ def HandleTransaction() -> None:
     except KeyboardInterrupt:
         print("Input cancelled by user.")
     except Exception as Ex:
-        print(f"An unexpected error occurred while saving the transaction: {Ex}")
+        print(
+            f"An unexpected error occurred while saving the transaction: {Ex}")
 
 
 def HandleSummary() -> None:
-    """
-    Output the user's account summary in a simple table.
-
-    Notes:
-        Relies on GillPayService.GetTransactionSummary returning a dict with
-        keys 'income', 'expense', and 'net'.
-    """
+    """Print the account summary (income, expense, net)."""
     try:
         GillPay = GillPayService()
         SummaryData = GillPay.GetTransactionSummary()
@@ -202,13 +173,12 @@ def HandleSummary() -> None:
         print(f"{'Expense':10} {SummaryData['expense']:>10.2f}")
         print(f"{'Net':10} {SummaryData['net']:>10.2f}")
     except Exception as Ex:
-        print(f"An unexpected error occurred while generating the summary: {Ex}")
+        print(
+            f"An unexpected error occurred while generating the summary: {Ex}")
 
 
 def HandleReport(ReportType: str) -> None:
-    """
-    Display a report. Supported values: EXP_BY_CAT, SUMMARY_BY_MONTH.
-    """
+    """Display a report. Supported values: EXP_BY_CAT, SUMMARY_BY_MONTH."""
     try:
         GillPay = GillPayService()
         print()
@@ -217,33 +187,27 @@ def HandleReport(ReportType: str) -> None:
         print(f"An unexpected error occurred while generating the report: {Ex}")
 
 
-def _TryGetCategoryTotals(Service: GillPayService) -> Optional[Dict[str, float]]:
-    """
-    Best-effort attempt to obtain expense totals by category from the service.
-    Returns None if unsupported.
-    """
+def TryGetCategoryTotals(Service: GillPayService) -> Optional[Dict[str, float]]:
+    """Best-effort attempt to obtain expense totals by category from the
+    service."""
     try:
-        return Service.GetExpenseTotalsByCategory()  # type: ignore[attr-defined]
+        return Service.GetExpenseTotalsByCategory()
     except AttributeError:
         return None
     except Exception:
         return None
 
+
 def LaunchApp() -> None:
-    """
-    Launch the Tk GUI. Preferred: import and call gui.app:main().
-    Fallback: run as a module so package imports work.
-    """
-    # Preferred path: call gui.app:main() directly if it exists
+    """Launch the Tk GUI (preferred: gui.app:main(); fallback: run as
+    module)."""
     try:
         from gui.app import main as GuiMain
         GuiMain()
         return
-    except Exception as ex:
-        # optional: print(f"[LaunchApp] module main() import failed: {ex}")
+    except Exception:
         pass
 
-    # Fallback path: run as a module (NOT by file path)
     try:
         import sys, subprocess
         subprocess.run([sys.executable, "-m", "gui.app"], check=False)
@@ -252,10 +216,8 @@ def LaunchApp() -> None:
 
 
 def HandleMatplotlibChart() -> None:
-    """
-    Show a simple bar chart of Expense totals by Category using Matplotlib.
-    Runs in the same process and blocks until the window is closed.
-    """
+    """Show a simple bar chart of expense totals by category using
+    Matplotlib."""
     try:
         import matplotlib.pyplot as plt
     except Exception as Ex:
@@ -264,7 +226,7 @@ def HandleMatplotlibChart() -> None:
 
     try:
         GillPay = GillPayService()
-        TotalsByCategory = GillPay.GetExpenseTotalsByCategory()  # dict[str, float]
+        TotalsByCategory = GillPay.GetExpenseTotalsByCategory()
     except Exception as Ex:
         print(f"Could not compute category totals: {Ex}")
         return
@@ -285,17 +247,15 @@ def HandleMatplotlibChart() -> None:
     Fig.tight_layout()
     plt.show()
 
-# ----------------------------
-# CLI framing
-# ----------------------------
 
-    """
-    Present a selection to the user:
-    """
+# CLI framing
 
 def PrintMenu() -> None:
-    print("\nHowdy fellow money savers and welcome to the GillPay\u2122 Finance Tracking Application!\n"
-          "\nPlease make a selection from the menu below:\n")
+    """Display the main CLI menu."""
+    print(
+        "\nHowdy fellow money savers and welcome to the GillPay\u2122 Finance "
+        "Tracking Application!\n"
+        "\nPlease make a selection from the menu below:\n")
     print("Press 1: Add Transaction")
     print("Press 2: Account Summary")
     print("Press 3: Expense by Category Report")
@@ -306,10 +266,7 @@ def PrintMenu() -> None:
 
 
 def main() -> None:
-    """
-    Interactive loop for GillPay.
-    Will be replaced by GUI in later phases.
-    """
+    """Interactive CLI loop for GillPay."""
     GillPayIsRunning = True
     try:
         while GillPayIsRunning:
@@ -317,7 +274,9 @@ def main() -> None:
             try:
                 UserChoice = int(input("Action: ").strip())
             except ValueError:
-                print("You entered invalid data. Please enter a number between 1 and 7.")
+                print(
+                    "You entered invalid data. Please enter a number between "
+                    "1 and 7.")
                 input("Press Enter to continue...")
                 continue
 
@@ -341,16 +300,15 @@ def main() -> None:
         print("Session cancelled by user.")
     finally:
         GillPayLogo()
-        print("Thank you for using GillPay\u2122 for your finance tracking needs!")
+        print(
+            "Thank you for using GillPay\u2122 for your finance tracking "
+            "needs!")
 
-# ----------------------------
+
 # Fun: ASCII logo
-# ----------------------------
 
 def GillPayLogo():
-    """
-    Creates GillPay logo whenever user exits out of the application
-    """
+    """Print the GillPay ASCII logo on exit."""
     print("             /`·.¸")
     print("            /¸...¸`:·")
     print("       ¸.·´  ¸   `·.¸.·´)")

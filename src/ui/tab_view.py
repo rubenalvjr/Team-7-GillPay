@@ -1,42 +1,50 @@
+# AUTHOR: Team 7 Goofy Goldfishes
+
+# DATE: 02OCT2025
+
 # PROGRAM: Tab View
 
-# PURPOSE: Contains core business logic for GillPay application
+# PURPOSE: Provide transaction filtering, sorting, and display for GillPay.
 
-# INPUT: Takes in input/requests from GillPay GUI
+# INPUT: User-selected filters (type, category) and DAO data.
 
-# PROCESS: Takes request data form GillPay GUI and processes it by performing
-# data validation and interacting with data access layer
+# PROCESS: Load data, apply filters, and render the table; update summary via
+# callback.
 
-# OUTPUT: Output is based on required data needed by user GUI interactions
+# OUTPUT: A Treeview with transactions and a refreshed summary bar.
 
-# HONOR CODE:  On my honor, as an Aggie, I have neither given nor received
+# HONOR CODE: On my honor, as an Aggie, I have neither given nor received
 # unauthorized aid on this academic work.
 
-# Gen AI: In keeping with my commitment to leverage advanced technology for
+# GEN AI: In keeping with my commitment to leverage advanced technology for
 # enhanced efficiency and accuracy in my work, I use generative artificial
 # intelligence tools to assist in writing my Python code.
 
-# src/ui/tab_view.py
+"""Transactions table tab with filter controls and sorting."""
 
 import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
+
 from src.dao.transaction_dao import TransactionDAO
 from src.categories import AllowedCategoriesForType
 
 
 class ViewTransactionsTab(ttk.Frame):
+    """Tab to view, filter, and sort transactions."""
+
     def __init__(self, parent, dao: TransactionDAO, on_refresh=None):
+        """Initialize filters, table, and initial data load."""
         super().__init__(parent, padding=12)
         self.Dao = dao
         self.OnRefresh = on_refresh
 
-    # Top bar: filters + refresh
         bar = ttk.Frame(self)
         bar.grid(row=0, column=0, sticky="we", pady=(0, 8))
         bar.columnconfigure(5, weight=1)
 
-        ttk.Label(bar, text="Type:").grid(row=0, column=0, sticky="e", padx=(0, 6))
+        ttk.Label(bar, text="Type:").grid(row=0, column=0, sticky="e",
+                                          padx=(0, 6))
         self.TypeFilterVar = tk.StringVar(value="All")
         self.TypeFilter = ttk.Combobox(
             bar,
@@ -47,23 +55,26 @@ class ViewTransactionsTab(ttk.Frame):
         )
         self.TypeFilter.grid(row=0, column=1, sticky="w", padx=(0, 12))
 
-        ttk.Label(bar, text="Category:").grid(row=0, column=2, sticky="e", padx=(0, 6))
+        ttk.Label(bar, text="Category:").grid(row=0, column=2, sticky="e",
+                                              padx=(0, 6))
         self.CategoryFilterVar = tk.StringVar(value="All")
-        self.CategoryFilter = ttk.Combobox(bar, textvariable=self.CategoryFilterVar, state="readonly", width=22)
+        self.CategoryFilter = ttk.Combobox(bar,
+                                           textvariable=self.CategoryFilterVar,
+                                           state="readonly", width=22)
         self.CategoryFilter.grid(row=0, column=3, sticky="w", padx=(0, 12))
 
-    # Initialize Category list and set up listeners
-        self._RefreshCategoryFilter()
-        self.TypeFilterVar.trace_add("write", lambda *_: self._OnTypeFilterChanged())
+        self.RefreshCategoryFilter()
+        self.TypeFilterVar.trace_add("write",
+                                     lambda *_: self.OnTypeFilterChanged())
         self.CategoryFilterVar.trace_add("write", lambda *_: self.LoadData())
 
-        ttk.Button(bar, text="Refresh", style="Gill.TButton", command=self.LoadData).grid(
-            row=0, column=4, padx=(0, 8)
-        )
+        ttk.Button(bar, text="Refresh", style="Gill.TButton",
+                   command=self.LoadData).grid(row=0, column=4, padx=(0, 8))
 
-    # Table
-        self.Columns = ("transaction", "category", "description", "amount", "date")
-        self.Tree = ttk.Treeview(self, columns=self.Columns, show="headings", height=16, style="Gill.Treeview")
+        self.Columns = ("transaction", "category", "description", "amount",
+                        "date")
+        self.Tree = ttk.Treeview(self, columns=self.Columns, show="headings",
+                                 height=16, style="Gill.Treeview")
 
         headings = {
             "transaction": "Type",
@@ -74,7 +85,9 @@ class ViewTransactionsTab(ttk.Frame):
         }
 
         for key, label in headings.items():
-            self.Tree.heading(key, text=label, command=lambda c=key: self.SortBy(c, False), anchor="w")
+            self.Tree.heading(key, text=label,
+                              command=lambda c=key: self.SortBy(c, False),
+                              anchor="w")
             if key == "amount":
                 self.Tree.column(key, width=110, anchor="e")
             elif key == "description":
@@ -82,24 +95,22 @@ class ViewTransactionsTab(ttk.Frame):
             else:
                 self.Tree.column(key, width=140, anchor="w")
 
-    # Every time I see 'evenrow' I think of 'Even Flow' by Pearl Jam and start humming to myself
         self.Tree.tag_configure("oddrow", background="#F6F9FC")
         self.Tree.tag_configure("evenrow", background="")
         self.Tree.grid(row=1, column=0, sticky="nsew")
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
 
-    # Initial load
         self.LoadData()
 
-    # Filter helpers
-    def _OnTypeFilterChanged(self):
+    def OnTypeFilterChanged(self):
         """When Type changes, rebuild Category filter list and reload table."""
-        self._RefreshCategoryFilter()
+        self.RefreshCategoryFilter()
         self.LoadData()
 
-    def _RefreshCategoryFilter(self):
-        """Set Category options based on current Type filter, include 'All'."""
+    def RefreshCategoryFilter(self):
+        """Set Category options based on current Type filter; include 'All'
+        first."""
         typ = (self.TypeFilterVar.get() or "All").strip()
         if typ == "All":
             income = AllowedCategoriesForType("income")
@@ -112,16 +123,16 @@ class ViewTransactionsTab(ttk.Frame):
         cur = self.CategoryFilterVar.get()
         self.CategoryFilterVar.set(cur if cur in vals else "All")
 
-    # Data loading + rendering
     def LoadData(self):
-        """Load DataFrame from DAO, apply filters, then render into the Treeview."""
+        """Load DataFrame from DAO, apply filters, and render into the
+        Treeview."""
         try:
             df = self.Dao.GetDataFrame()
         except Exception as ex:
-            messagebox.showerror("Load Failed", f"Could not load transactions:\n{ex}")
+            messagebox.showerror("Load Failed",
+                                 f"Could not load transactions:\n{ex}")
             return
 
-    # Clear table
         for iid in self.Tree.get_children():
             self.Tree.delete(iid)
 
@@ -130,14 +141,12 @@ class ViewTransactionsTab(ttk.Frame):
                 self.OnRefresh(df)
             return
 
-    # Ensure expected columns exist/order
         expected = list(self.Columns)
         for c in expected:
             if c not in df.columns:
                 df[c] = "" if c != "amount" else 0.0
         df = df.loc[:, expected].copy()
 
-    # Apply filters
         typ = (self.TypeFilterVar.get() or "All").strip()
         cat = (self.CategoryFilterVar.get() or "All").strip()
         if typ != "All":
@@ -145,7 +154,6 @@ class ViewTransactionsTab(ttk.Frame):
         if cat != "All":
             df = df[df["category"] == cat]
 
-    # Insert rows; amount as 2 decimals
         for i, (_, row) in enumerate(df.iterrows()):
             values = (
                 str(row["transaction"]),
@@ -154,18 +162,15 @@ class ViewTransactionsTab(ttk.Frame):
                 f"{float(row['amount']):.2f}",
                 str(row["date"]),
             )
-
-    # Eeeeven flooowwww thoughts arrive like butterflies!!
             tag = "evenrow" if i % 2 == 0 else "oddrow"
             self.Tree.insert("", "end", values=values, tags=(tag,))
 
-    # Update the summary bar with the FILTERED results
         if callable(self.OnRefresh):
             self.OnRefresh(df)
 
-    # Sorting
     def SortBy(self, column: str, descending: bool):
-        """Sort the Treeview rows. Numeric for Amount, chronological for Date."""
+        """Sort the Treeview rows. Numeric for Amount, chronological for
+        Date."""
         rows = self.Tree.get_children("")
 
         def key_func(item_id):
@@ -183,9 +188,8 @@ class ViewTransactionsTab(ttk.Frame):
             return v.lower() if isinstance(v, str) else v
 
         sorted_rows = sorted(rows, key=key_func, reverse=descending)
-
         for idx, iid in enumerate(sorted_rows):
             self.Tree.move(iid, "", idx)
             self.Tree.item(iid, tags=("evenrow" if idx % 2 == 0 else "oddrow",))
-
-        self.Tree.heading(column, command=lambda: self.SortBy(column, not descending))
+        self.Tree.heading(column,
+                          command=lambda: self.SortBy(column, not descending))

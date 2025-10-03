@@ -1,37 +1,43 @@
-# PROGRAM:     Transaction
+# AUTHOR: Team 7 Goofy Goldfishes
 
-# AUTHOR:      Team 7
+# DATE: 02OCT2025
 
-# PURPOSE:     Core Data Model used for GillPay processes
+# PROGRAM: Transaction
 
-# INPUT:       Transaction values (Type, Category, Amount, Date)
+# PURPOSE: Core data model used for GillPay processes.
 
-# PROCESS:     Acts as container of data representing a row of
-# data (Transaction)
+# INPUT: Transaction values (type, category, description, amount, date).
 
-# OUTPUT:      Transaction Object
+# PROCESS: Encapsulates values representing a single transaction row.
 
-# HONOR CODE:  On my honor, as an Aggie, I have neither given nor
-# received unauthorized aid on this academic work.
+# OUTPUT: Transaction object instances.
 
-# Gen AI: In keeping with my commitment to leverage advanced technology for
+# HONOR CODE: On my honor, as an Aggie, I have neither given nor received
+# unauthorized aid on this academic work.
+
+# GEN AI: In keeping with my commitment to leverage advanced technology for
 # enhanced efficiency and accuracy in my work, I use generative artificial
 # intelligence tools to assist in writing my Python code.
 
-# src/transaction.py
+"""Transaction dataclass representing a single financial record."""
+
 from dataclasses import dataclass
 from typing import Any, Iterable
 
+
 @dataclass(frozen=True)
 class Transaction:
-    transaction: str          # "income" | "expense"
+    """Immutable data container for a GillPay transaction."""
+
+    transaction: str
     category: str
     description: str
     amount: float
-    date: str                 # "YYYY/MM/DD"
+    date: str
 
     @classmethod
-    def from_row(cls, row: Iterable[Any]) -> "Transaction":
+    def FromRow(cls, row: Iterable[Any]) -> "Transaction":
+        """Create a Transaction from a row-like iterable."""
         r = list(row)
         return cls(
             transaction=str(r[0]),
@@ -42,7 +48,8 @@ class Transaction:
         )
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> "Transaction":
+    def FromDict(cls, d: dict[str, Any]) -> "Transaction":
+        """Create a Transaction from a dict-like mapping."""
         return cls(
             transaction=str(d.get("transaction", "")),
             category=str(d.get("category", "")),

@@ -1,29 +1,30 @@
+# AUTHOR: Team 7 Goofy Goldfishes
+
+# DATE: 02OCT2025
+
 # PROGRAM: Theme
 
-# PURPOSE: Used as core theming for application
+# PURPOSE: Centralized GillPay UI theme and widget styles for Tk/ttk.
 
-# INPUT: Takes in input/requests from GillPay GUI
+# INPUT: Tk root window.
 
-# PROCESS: Takes request data form GillPay GUI and processes it by performing
-# data validation and interacting with data access layer
+# PROCESS: Configure ttk styles (entries, comboboxes, buttons, notebook,
+# treeview, etc.) and return a color map.
 
-# OUTPUT: Output is based on required data needed by user GUI interactions
+# OUTPUT: Dict of theme colors to be reused by the application.
 
-# HONOR CODE:  On my honor, as an Aggie, I have neither given nor received
+# HONOR CODE: On my honor, as an Aggie, I have neither given nor received
 # unauthorized aid on this academic work.
 
-# Gen AI: In keeping with my commitment to leverage advanced technology for
+# GEN AI: In keeping with my commitment to leverage advanced technology for
 # enhanced efficiency and accuracy in my work, I use generative artificial
 # intelligence tools to assist in writing my Python code.
 
-
-
+"""GillPay theme: shared colors and ttk style configuration."""
 
 import tkinter as tk
 from tkinter import ttk
 
-
-#This is used for the turtle_visual.py file
 COLORS = {
     "Navy": "#0B2545",
     "Blue": "#13315C",
@@ -40,8 +41,9 @@ COLORS = {
 }
 
 
-
 def ApplyTheme(root: tk.Tk):
+    """Apply GillPay styles to the given Tk root and return the colors
+    mapping."""
     colors = {
         "Navy": "#0B2545",
         "Blue": "#13315C",
@@ -63,19 +65,15 @@ def ApplyTheme(root: tk.Tk):
     except tk.TclError:
         pass
 
-    # App background and default colors
     root.configure(bg=colors["Navy"])
-    style.configure(
-        ".",
-        background=colors["Orange"],
-        foreground=colors["TextOnLight"],
-    )
+    style.configure(".", background=colors["Orange"],
+                    foreground=colors["TextOnLight"])
 
-    # Labels
-    style.configure("TLabel", background=colors["Surface"], foreground=colors["TextOnLight"])
+    style.configure("TLabel", background=colors["Surface"],
+                    foreground=colors["TextOnLight"])
 
-    # Entries
-    style.configure("TEntry", fieldbackground=colors["White"], foreground=colors["TextOnLight"])
+    style.configure("TEntry", fieldbackground=colors["White"],
+                    foreground=colors["TextOnLight"])
     style.map(
         "TEntry",
         foreground=[("disabled", colors["Disabled"])],
@@ -85,8 +83,8 @@ def ApplyTheme(root: tk.Tk):
         darkcolor=[("focus", colors["Orange"]), ("!focus", colors["Border"])],
     )
 
-    # Combobox (keeps same field look as Entry)
-    style.configure("TCombobox", fieldbackground=colors["White"], foreground=colors["TextOnLight"])
+    style.configure("TCombobox", fieldbackground=colors["White"],
+                    foreground=colors["TextOnLight"])
     style.map(
         "TCombobox",
         foreground=[("disabled", colors["Disabled"])],
@@ -96,41 +94,33 @@ def ApplyTheme(root: tk.Tk):
         darkcolor=[("focus", colors["Orange"]), ("!focus", colors["Border"])],
     )
 
-    # DateEntry: keep the arrow button area orange; glyph black
     style.configure(
         "Gill.DateEntry",
-        fieldbackground=colors["White"],  # text field
+        fieldbackground=colors["White"],
         foreground=colors["TextOnLight"],
-        background=colors["Orange"],  # arrow button area
-        arrowcolor=colors["Black"]  # chevron glyph (default black)
+        background=colors["Orange"],
+        arrowcolor=colors["Black"],
     )
     style.map(
         "Gill.DateEntry",
         background=[
             ("pressed", colors["Orange"]),
             ("active", colors["Orange"]),
-            ("focus", colors["Orange"]),  # <-- was White; make it Orange
+            ("focus", colors["Orange"]),
             ("readonly", colors["Orange"]),
             ("!disabled", colors["Orange"]),
         ],
-        fieldbackground=[
-            ("readonly", "#F6F8FB"),
-            ("disabled", "#F3F6F8"),
-        ],
+        fieldbackground=[("readonly", "#F6F8FB"), ("disabled", "#F3F6F8")],
         arrowcolor=[
             ("disabled", colors["Disabled"]),
-            ("!disabled", colors["Black"]),  # keep glyph black in normal states
+            ("!disabled", colors["Black"]),
             ("active", colors["Black"]),
             ("focus", colors["Black"]),
         ],
     )
 
-
-    # Some builds/themes render the DateEntry dropdown as a TMenubutton
-    style.configure("TMenubutton",
-                    background=colors["Orange"],
-                    arrowcolor=colors["Black"]  # glyph black to match others
-                    )
+    style.configure("TMenubutton", background=colors["Orange"],
+                    arrowcolor=colors["Black"])
     style.map(
         "TMenubutton",
         background=[
@@ -147,36 +137,28 @@ def ApplyTheme(root: tk.Tk):
         ],
     )
 
-    # Primary button (your app uses Gill.TButton)
-    style.configure(
-        "Gill.TButton",
-        background=colors["Navy"],
-        foreground=colors["White"],
-        borderwidth=0,
-        padding=(12, 6),
-    )
+    style.configure("Gill.TButton", background=colors["Navy"],
+                    foreground=colors["White"], borderwidth=0, padding=(12, 6))
     style.map(
         "Gill.TButton",
-        background=[("active", colors["Selection"]), ("pressed", colors["Orange"]), ("disabled", "#F0B995")],
+        background=[("active", colors["Selection"]),
+                    ("pressed", colors["Orange"]), ("disabled", "#F0B995")],
         foreground=[("disabled", "#FFFFFF")],
     )
 
-    # Notebook (tabs)
-    style.configure("Gill.TNotebook", background=colors["Surface"], borderwidth=0)
-    style.configure(
-        "Gill.TNotebook.Tab",
-        background=colors["Blue"],
-        foreground=colors["TextOnDark"],
-        padding=(14, 8),
-    )
+    style.configure("Gill.TNotebook", background=colors["Surface"],
+                    borderwidth=0)
+    style.configure("Gill.TNotebook.Tab", background=colors["Blue"],
+                    foreground=colors["TextOnDark"], padding=(14, 8))
     style.map(
         "Gill.TNotebook.Tab",
         background=[("selected", colors["Navy"]), ("active", colors["Blue2"])],
-        foreground=[("selected", colors["TextOnDark"]), ("disabled", colors["Disabled"])],
-        padding=[("selected", (14, 8)), ("active", (14, 8)), ("!selected", (12, 6))],
+        foreground=[("selected", colors["TextOnDark"]),
+                    ("disabled", colors["Disabled"])],
+        padding=[("selected", (14, 8)), ("active", (14, 8)),
+                 ("!selected", (12, 6))],
     )
 
-    # Treeview (table)
     style.configure(
         "Gill.Treeview",
         background=colors["White"],
@@ -198,11 +180,9 @@ def ApplyTheme(root: tk.Tk):
         relief="flat",
         padding=(6, 4),
     )
-    style.map(
-        "Gill.Treeview.Heading",
-        background=[("active", colors["Blue"])],
-        relief=[("pressed", "groove")],
-    )
+    style.map("Gill.Treeview.Heading", background=[("active", colors["Blue"])],
+              relief=[("pressed", "groove")])
+
     style.configure(
         "Visualize.TButton",
         background=colors["Navy"],
@@ -213,18 +193,23 @@ def ApplyTheme(root: tk.Tk):
     )
     style.map(
         "Visualize.TButton",
-        background=[("active", colors["Blue2"]), ("pressed", colors["Orange"]), ("disabled", colors["Disabled"])],
+        background=[("active", colors["Blue2"]), ("pressed", colors["Orange"]),
+                    ("disabled", colors["Disabled"])],
         foreground=[("disabled", colors["White"])],
     )
-    # Scrollbars (subtle to match Surface)
-    style.configure("Vertical.TScrollbar", background=colors["Surface"], troughcolor=colors["Surface"], bordercolor=colors["Surface"])
-    style.configure("Horizontal.TScrollbar", background=colors["Surface"], troughcolor=colors["Surface"], bordercolor=colors["Surface"])
 
-    # Checkbutton / Radiobutton to fit scheme
-    style.configure("TCheckbutton", background=colors["Surface"], foreground=colors["TextOnLight"])
-    style.configure("TRadiobutton", background=colors["Surface"], foreground=colors["TextOnLight"])
+    style.configure("Vertical.TScrollbar", background=colors["Surface"],
+                    troughcolor=colors["Surface"],
+                    bordercolor=colors["Surface"])
+    style.configure("Horizontal.TScrollbar", background=colors["Surface"],
+                    troughcolor=colors["Surface"],
+                    bordercolor=colors["Surface"])
 
-    # Separators
+    style.configure("TCheckbutton", background=colors["Surface"],
+                    foreground=colors["TextOnLight"])
+    style.configure("TRadiobutton", background=colors["Surface"],
+                    foreground=colors["TextOnLight"])
+
     style.configure("TSeparator", background=colors["Border"])
 
     return colors

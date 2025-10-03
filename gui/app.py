@@ -1,10 +1,37 @@
-# gui/app.py
+# AUTHOR: Team 7 Goofy Goldfishes
+
+# DATE: 02OCT2025
+
+# PROGRAM: GillPay GUI Application
+
+# PURPOSE: Launches the GillPay™ desktop interface and assembles the main window,
+# tabs, theme, and summary bar for personal finance tracking.
+
+# INPUT: Reads transactions via TransactionDAO, user actions in the GUI.
+
+# PROCESS: Initializes theme and notebook tabs, displays summary metrics, and
+# updates figures on data refresh.
+
+# OUTPUT: A Tkinter-based window with tabs for adding, viewing, reporting, and
+# visualizing transactions.
+
+# HONOR CODE: On my honor, as an Aggie, I have neither given nor received
+# unauthorized aid on this academic work.
+
+# GEN AI: In keeping with my commitment to leverage advanced technology for
+# enhanced efficiency and accuracy in my work, I use generative artificial
+# intelligence tools to assist in writing my Python code.
+
+"""GillPay GUI launcher and main window composition for the personal finance app."""
+
 import os
-os.environ["PANDAS_COPY_ON_WRITE"] = "1"   # set BEFORE any pandas-using imports
+os.environ["PANDAS_COPY_ON_WRITE"] = "1"
 
 import tkinter as tk
 import sys
 from tkinter import ttk
+from pathlib import Path
+
 from src.ui.theme import ApplyTheme
 from src.ui.tab_view import ViewTransactionsTab
 from src.ui.tab_add import AddTransactionTab
@@ -12,23 +39,22 @@ from src.ui.tab_report_category import ReportCategoryTab
 from src.ui.tab_report_month import ReportMonthTab
 from src.dao.transaction_dao import TransactionDAO
 from src.ui.tab_charts import ChartsTab
-from pathlib import Path
 
 
 class GillPayApp(tk.Tk):
+    """Main Tkinter application for GillPay."""
+
     def __init__(self):
+        """Initialize the window, theme, tabs, and summary bar."""
         super().__init__()
         self.title("GillPay\u2122")
         self.geometry("1024x680")
 
-
-
-        def _set_app_icon(win: tk.Tk) -> None:
-            # Resolve your project root (parent of /gui)
+        def SetAppIcon(win: tk.Tk) -> None:
+            """Set the application icon from available image assets."""
             base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
             images = base / "images"
 
-            # Try ICO first (best on Windows)
             for name in ("gillpay.ico", "goofy_goldfishes.ico", "app.ico"):
                 p = images / name
                 if p.exists():
@@ -38,7 +64,6 @@ class GillPayApp(tk.Tk):
                     except Exception:
                         pass
 
-            # Fallback to PNG (cross-platform)
             for name in ("gillpay_256.png", "goofy_goldfishes_256.png", "gillpay.png"):
                 p = images / name
                 if p.exists():
@@ -48,12 +73,10 @@ class GillPayApp(tk.Tk):
                     except Exception:
                         pass
 
-        _set_app_icon(self)
+        SetAppIcon(self)
 
-        # Theme/colors
         self.colors = ApplyTheme(self)
 
-        # Title bar
         title = tk.Frame(self, bg=self.colors["Navy"], height=10)
         title.pack(fill="x")
         tk.Label(
@@ -65,31 +88,25 @@ class GillPayApp(tk.Tk):
             padx=24,
         ).pack(side="left")
 
-        # Right-aligned logo in the title bar
         try:
-            base = Path(__file__).resolve().parents[1]  # project root
+            base = Path(__file__).resolve().parents[1]
             images = base / "images"
-            # pick a crisp size you have in /images
             for name in ("goofy_goldfishes_128.png", "gillpay.png"):
                 p = images / name
                 if p.exists():
-                    self.LogoSmall = tk.PhotoImage(file=str(p))  # keep a ref on self
+                    self.LogoSmall = tk.PhotoImage(file=str(p))
                     tk.Label(title, image=self.LogoSmall, bg=self.colors["Navy"]).pack(side="right", padx=24, pady=8)
                     break
         except Exception:
             pass
 
-        # Shared DAO
         self.Dao = TransactionDAO()
 
-        # Build summary bar BEFORE tabs so labels exist for callbacks
-        self._BuildSummaryBar()
+        self.BuildSummaryBar()
 
-        # Notebook
         self.Notebook = ttk.Notebook(self, style="Gill.TNotebook")
         self.Notebook.pack(expand=True, fill="both", padx=10, pady=(10, 6))
 
-        # Tabs
         view_tab = ViewTransactionsTab(self.Notebook, self.Dao, on_refresh=self.RefreshSummary)
         add_tab = AddTransactionTab(self.Notebook, self.Dao, view_tab)
         report_cat_tab = ReportCategoryTab(self.Notebook, self.Dao)
@@ -102,10 +119,10 @@ class GillPayApp(tk.Tk):
         self.Notebook.add(report_month_tab, text="Report: Month")
         self.Notebook.add(charts_tab, text="Visualizations")
 
-        # Initial fill
         self.RefreshSummary()
 
-    def _BuildSummaryBar(self):
+    def BuildSummaryBar(self):
+        """Create the income, expense, and net summary labels."""
         bar = tk.Frame(self, bg=self.colors["Navy"])
         bar.pack(fill="x", padx=10, pady=(20, 20))
 
@@ -119,6 +136,7 @@ class GillPayApp(tk.Tk):
         self.LblNet.pack(side="left", padx=(0, 16), pady=6)
 
     def RefreshSummary(self, df=None):
+        """Update the summary labels using current transaction totals."""
         try:
             if df is None:
                 df = self.Dao.GetDataFrame()
@@ -135,10 +153,11 @@ class GillPayApp(tk.Tk):
         self.LblNet.config(text=f"Net: ${net:,.2f}")
 
 
-def main():
+def Main():
+    """Entry point to launch the GillPay GUI."""
     App = GillPayApp()
     App.mainloop()
 
 
 if __name__ == "__main__":
-    main()
+    Main()
