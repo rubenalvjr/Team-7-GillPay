@@ -15,6 +15,8 @@
 # User selects 4 then Spending By Month Report is displayed
 # User selects 5 then Turtle chart opens (fun)
 # User selects 6 then application is closed (prints ASCII fish)
+# User selects 7 then application is closed (prints ASCII fish)
+
 
 # OUTPUT: Successful transaction creation, account summary, reports, or a turtle chart
 
@@ -27,7 +29,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, date
 from typing import Dict, Literal, Optional
 
 from src.gillpay_service import GillPayService
@@ -43,13 +45,76 @@ REPORT_SUMMARY_BY_MONTH: Literal["SUMMARY_BY_MONTH"] = "SUMMARY_BY_MONTH"
 # Utility: Validation helpers
 # ----------------------------
 
-def IsValidDate(DateText: str) -> bool:
-    """Return True if DateText matches YYYY/MM/DD."""
-    try:
-        datetime.strptime(DateText, "%Y/%m/%d")
-        return True
-    except ValueError:
+_ALLOWED_DATE_FORMATS = [
+    "%Y/%m/%d",     # 2025/10/01
+    "%Y-%m-%d",     # 2025-10-01
+    "%m/%d/%Y",     # 10/01/2025
+    "%d %B %Y",     # 22 October 2025
+    "%d %b %Y",     # 22 Oct 2025
+]
+
+def _TryParseDate(Value: str) -> Optional[datetime]:
+    Clean = (Value or "").strip()
+    for Fmt in _ALLOWED_DATE_FORMATS:
+        try:
+            return datetime.strptime(Clean, Fmt)
+        except ValueError:
+            continue
+    return None
+
+
+def IsValidDate(Value: str) -> bool:
+    """Accept several human-friendly formats, enforce not-in-future and sane lower bound."""
+    Dt = _TryParseDate(Value)
+    if not Dt:
         return False
+    D = Dt.date()
+    if D.year < 1900:            # lower bound (keep 1900 to match rubric)
+        return False
+    if D > date.today():         # no future dates
+        return False
+    return True
+
+
+def PromptAmount() -> float:
+    """
+    Prompt until a valid numeric, positive amount is entered.
+    This guarantees a re-prompt on strings like 'fifty dollars' or negative/zero values.
+    """
+    while True:
+        Raw = input("Transaction Amount (e.g., 12.50): ").strip()
+        try:
+            Amount = round(float(Raw), 2)
+            if Amount <= 0:
+                print("Amount must be greater than zero. Please re-enter.")
+                continue
+            return Amount
+        except ValueError:
+            print("Amount must be numeric (e.g., 12.50). Please re-enter.")
+
+
+def PromptDate() -> str:
+    """
+    Prompt until a valid date is entered:
+    - Accepts multiple formats (YYYY/MM/DD, YYYY-MM-DD, MM/DD/YYYY, '22 Oct 2025', '22 October 2025')
+    - Rejects dates before 1900-01-01
+    - Rejects future dates
+    - Normalizes to YYYY/MM/DD for storage
+    """
+    while True:
+        Value = input("Transaction Date (YYYY/MM/DD or '22 Oct 2025'): ").strip()
+        Dt = _TryParseDate(Value)
+        if not Dt:
+            print("Unrecognized date format. Try 2025/10/01, 10/01/2025, or '22 Oct 2025'.")
+            continue
+        D = Dt.date()
+        if D.year < 1900:
+            print("Date is too far in the past (before 1900). Please re-enter.")
+            continue
+        if D > date.today():
+            print("Date cannot be in the future. Please re-enter.")
+            continue
+        return D.strftime("%Y/%m/%d")
 
 
 def PromptTransactionType() -> str:
@@ -77,26 +142,6 @@ def PromptDescription() -> str:
         if Value:
             return Value
         print("Description cannot be empty.")
-
-
-def PromptAmount() -> float:
-    """Prompt until a valid numeric amount is entered. Rounds to 2 decimals."""
-    while True:
-        Raw = input("Transaction Amount: ").strip()
-        try:
-            Amount = round(float(Raw), 2)
-            return Amount
-        except ValueError:
-            print("Please enter a valid numeric value for amount.")
-
-
-def PromptDate() -> str:
-    """Prompt until a valid YYYY/MM/DD date is entered."""
-    while True:
-        Value = input("Transaction Date (YYYY/MM/DD): ").strip()
-        if IsValidDate(Value):
-            return Value
-        print("Please enter a valid date in YYYY/MM/DD format.")
 
 
 # ----------------------------
@@ -206,8 +251,6 @@ def LaunchApp() -> None:
         print(f"Could not launch GUI: {ex}")
 
 
-
-
 def HandleMatplotlibChart() -> None:
     """
     Show a simple bar chart of Expense totals by Category using Matplotlib.
@@ -251,7 +294,7 @@ def HandleMatplotlibChart() -> None:
     """
 
 def PrintMenu() -> None:
-    print("\nHowdy fellow money savers and welcome to the GillPay Finance Tracking Application!\n"
+    print("\nHowdy fellow money savers and welcome to the GillPay\u2122 Finance Tracking Application!\n"
           "\nPlease make a selection from the menu below:\n")
     print("Press 1: Add Transaction")
     print("Press 2: Account Summary")
@@ -274,7 +317,7 @@ def main() -> None:
             try:
                 UserChoice = int(input("Action: ").strip())
             except ValueError:
-                print("You entered invalid data. Please enter a number between 1 and 6.")
+                print("You entered invalid data. Please enter a number between 1 and 7.")
                 input("Press Enter to continue...")
                 continue
 
@@ -293,12 +336,12 @@ def main() -> None:
             elif UserChoice == 7:
                 GillPayIsRunning = False
             else:
-                print("Invalid choice, please select value 1 - 6.")
+                print("Invalid choice, please select value 1 - 7.")
     except KeyboardInterrupt:
         print("Session cancelled by user.")
     finally:
         GillPayLogo()
-        print("Thank you for using GillPay for your finance tracking needs!")
+        print("Thank you for using GillPay\u2122 for your finance tracking needs!")
 
 # ----------------------------
 # Fun: ASCII logo
@@ -311,9 +354,9 @@ def GillPayLogo():
     print("             /`·.¸")
     print("            /¸...¸`:·")
     print("       ¸.·´  ¸   `·.¸.·´)")
-    print("      : © ):´; GillPay¸  {")
+    print("      : © ):´; GillPay\u2122  {")
     print("       `·.¸ `·  ¸.·´\\`·¸)")
-    print("           `\\´´\\¸.·´")
+    print("           `\\\\´´\\¸.·´")
 
 
 if __name__ == "__main__":

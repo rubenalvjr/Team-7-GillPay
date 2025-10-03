@@ -33,6 +33,7 @@ COLORS = {
     "TextOnLight": "#0B2545",
     "Surface": "#E8EEF2",
     "White": "#FFFFFF",
+    "Black": "#000000",
     "Border": "#D1D9E0",
     "Selection": "#F7A26E",
     "Disabled": "#A8B3BF",
@@ -50,6 +51,7 @@ def ApplyTheme(root: tk.Tk):
         "TextOnLight": "#0B2545",
         "Surface": "#E8EEF2",
         "White": "#FFFFFF",
+        "Black": "#000000",
         "Border": "#D1D9E0",
         "Selection": "#F7A26E",
         "Disabled": "#A8B3BF",
@@ -89,9 +91,60 @@ def ApplyTheme(root: tk.Tk):
         "TCombobox",
         foreground=[("disabled", colors["Disabled"])],
         fieldbackground=[("readonly", "#F6F8FB"), ("disabled", "#F3F6F8")],
-        bordercolor=[("focus", colors["Orange"]), ("!focus", colors["Border"])],
-        lightcolor=[("focus", colors["Orange"]), ("!focus", colors["Border"])],
+        bordercolor=[("focus", colors["White"]), ("!focus", colors["Border"])],
+        lightcolor=[("focus", colors["White"]), ("!focus", colors["Border"])],
         darkcolor=[("focus", colors["Orange"]), ("!focus", colors["Border"])],
+    )
+
+    # DateEntry: keep the arrow button area orange; glyph black
+    style.configure(
+        "Gill.DateEntry",
+        fieldbackground=colors["White"],  # text field
+        foreground=colors["TextOnLight"],
+        background=colors["Orange"],  # arrow button area
+        arrowcolor=colors["Black"]  # chevron glyph (default black)
+    )
+    style.map(
+        "Gill.DateEntry",
+        background=[
+            ("pressed", colors["Orange"]),
+            ("active", colors["Orange"]),
+            ("focus", colors["Orange"]),  # <-- was White; make it Orange
+            ("readonly", colors["Orange"]),
+            ("!disabled", colors["Orange"]),
+        ],
+        fieldbackground=[
+            ("readonly", "#F6F8FB"),
+            ("disabled", "#F3F6F8"),
+        ],
+        arrowcolor=[
+            ("disabled", colors["Disabled"]),
+            ("!disabled", colors["Black"]),  # keep glyph black in normal states
+            ("active", colors["Black"]),
+            ("focus", colors["Black"]),
+        ],
+    )
+
+
+    # Some builds/themes render the DateEntry dropdown as a TMenubutton
+    style.configure("TMenubutton",
+                    background=colors["Orange"],
+                    arrowcolor=colors["Black"]  # glyph black to match others
+                    )
+    style.map(
+        "TMenubutton",
+        background=[
+            ("pressed", colors["Orange"]),
+            ("active", colors["Orange"]),
+            ("focus", colors["Orange"]),
+            ("!disabled", colors["Orange"]),
+        ],
+        arrowcolor=[
+            ("disabled", colors["Disabled"]),
+            ("!disabled", colors["Black"]),
+            ("active", colors["Black"]),
+            ("focus", colors["Black"]),
+        ],
     )
 
     # Primary button (your app uses Gill.TButton)

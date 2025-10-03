@@ -30,7 +30,11 @@ from pandas import DataFrame
 from src.models.transaction import Transaction
 from datetime import datetime
 
+
+
 _DATE_IN_FORMATS = ("%Y/%m/%d", "%m/%d/%Y", "%Y-%m-%d", "%m-%d-%Y")
+
+
 
 
 def _normalize_date_str(s: str) -> str:
@@ -45,14 +49,16 @@ def _normalize_date_str(s: str) -> str:
     return s
 
 
+
+
+
 class TransactionDAO:
     """
     Minimal DAO with a single, consistent CSV schema:
       ["transaction", "category", "description", "amount", "date"]
     """
 
-    COLUMNS: list[str] = ["transaction", "category", "description", "amount",
-                          "date"]
+    COLUMNS: list[str] = ["transaction", "category", "description", "amount", "date"]
 
     def __init__(self, datasource: str | None = None):
         """
@@ -67,13 +73,16 @@ class TransactionDAO:
 
         self.csv_path.parent.mkdir(parents=True, exist_ok=True)
         if not self.csv_path.exists():
-            self.csv_path.write_text(",".join(self.COLUMNS) + "\n",
-                                     encoding="utf-8")
+            self.csv_path.write_text(",".join(self.COLUMNS) + "\n", encoding="utf-8")
 
         # String path for Pandas and callers that expect a str
         self.datasource = str(self.csv_path)
 
-    # ---------- Reads ----------
+
+
+
+
+# ---------- Reads ----------
 
     def GetDataFrame(self) -> DataFrame:
 
@@ -91,9 +100,8 @@ class TransactionDAO:
         df = df[self.COLUMNS].copy()
 
         # amount = float; others already strings
-        df.loc[:, "amount"] = (
-            pd.to_numeric(df["amount"], errors="coerce").fillna(0.0).astype(
-                float))
+        df.loc[:, "amount"] = (pd.to_numeric(df["amount"], errors="coerce").fillna(0.0).astype(float))
+
         # normalize date display/storage to YYYY/MM/DD
         df.loc[:, "date"] = df["date"].map(_normalize_date_str)
 
@@ -104,8 +112,8 @@ class TransactionDAO:
         df = self.GetDataFrame()
         return self.ConvertToTransactionList(df.values.tolist())
 
-    def GetTransactionsBy(self, column_name: str, column_value) -> list[
-        Transaction]:
+    def GetTransactionsBy(self, column_name: str, column_value) -> list[Transaction]:
+
         """
         Filter by column name/value and return transactions.
 
@@ -113,15 +121,74 @@ class TransactionDAO:
         :param column_value: value to match in the given column
         """
         if column_name not in self.COLUMNS:
-            raise ValueError(
-                f"Unknown column '{column_name}'. Expected one of "
-                f"{self.COLUMNS}.")
+            raise ValueError(f"Unknown column '{column_name}'. Expected one of "f"{self.COLUMNS}.")
 
         df = self.GetDataFrame()
         rows = df[df[column_name] == column_value].values.tolist()
         return self.ConvertToTransactionList(rows)
 
-    # ---------- Writes ----------
+    def GetDataFrameInRange(self, start=None, end=None) -> DataFrame:
+        """
+        Return a copy of the DataFrame filtered by [start, end], inclusive.
+        start/end may be date objects or strings in common formats.
+        Uses the DAO's canonical YYYY/MM/DD normalization internally.
+        """
+        df = self.GetDataFrame().copy()
+        if df.empty:
+            return df
+
+        # Normalize start/end to YYYY/MM/DD strings (or None)
+        s = _normalize_date_str(str(start)) if start else None
+        e = _normalize_date_str(str(end)) if end else None
+
+        # Convert to datetime for proper comparison
+        dt = pd.to_datetime(df["date"], format="%Y/%m/%d", errors="coerce")
+        mask = dt.notna()
+
+        if s:
+            sdt = pd.to_datetime(s, format="%Y/%m/%d", errors="coerce")
+            mask &= dt >= sdt
+        if e:
+            edt = pd.to_datetime(e, format="%Y/%m/%d", errors="coerce")
+            mask &= dt <= edt
+
+        return df.loc[mask].copy()
+
+
+    def IsDuplicate(self, tx: Transaction) -> bool:
+        """
+        Return True if a transaction with the same
+        transaction/category/description/amount/date already exists.
+        - String comparisons are case-insensitive and trimmed
+        - Amount is compared at 2 decimals
+        - Date is compared in normalized YYYY/MM/DD format
+        """
+        try:
+            df = self.GetDataFrame()
+        except Exception:
+            return False
+
+        if df is None or df.empty:
+            return False
+
+        # Normalize probe values
+        s_tx   = str(tx.transaction).strip().lower()
+        s_cat  = str(tx.category).strip().lower()
+        s_desc = str(tx.description).strip().lower()
+        amt2   = round(float(tx.amount), 2)
+        d_norm = _normalize_date_str(str(tx.date))
+
+        mask = (
+            df["transaction"].astype(str).str.strip().str.lower().eq(s_tx) &
+            df["category"].astype(str).str.strip().str.lower().eq(s_cat) &
+            df["description"].astype(str).str.strip().str.lower().eq(s_desc) &
+            df["amount"].astype(float).round(2).eq(amt2) &
+            df["date"].astype(str).eq(d_norm)
+        )
+        return bool(mask.any())
+
+
+# ---------- Writes ----------
 
     def SaveTransaction(self, tx: Transaction) -> None:
         """Append a Transaction to the CSV using the canonical column order."""
@@ -151,7 +218,7 @@ class TransactionDAO:
                     _normalize_date_str(str(tx.date)),
                 ])
 
-    # ---------- Helpers ----------
+# ---------- Helpers ----------
 
     def ConvertToTransactionList(self, csv_rows) -> list[Transaction]:
         """Convert list-of-lists rows to Transaction objects."""
@@ -168,21 +235,28 @@ class TransactionDAO:
             )
         return items
 
-    def ExpenseByCategoryData(self) -> DataFrame:
+    def ExpenseByCategoryData(self, start=None, end=None) -> DataFrame:
         """
-        Create an Expense by Category DataFrame so that information can be
-        passed
-        to client to be turned into a visualization
+        Expense totals by category, optionally filtered by inclusive [start, end].
+        Returns columns: category, amount (float), sorted desc by amount.
         """
-        df = self.GetDataFrame()
-        # Pull only expense items
-        expenses = df[df["transaction"] == "expense"]
+        df = self.GetDataFrameInRange(start, end)
+        if df.empty:
+            return pd.DataFrame({"category": [], "amount": []})
 
-        # Grouping and summing transactions by category and returning DataFrame
-        report = expenses.groupby('category')['amount'].sum().reset_index()
+        # Ensure canonical casing for transaction type
+        t = df["transaction"].astype(str).str.strip().str.lower()
+        expenses = df.loc[t.eq("expense")].copy()
 
-        # Sorting items in the amount
-        return report.sort_values(by="amount", ascending=False)
+        if expenses.empty:
+            return pd.DataFrame({"category": [], "amount": []})
+
+        report = expenses.groupby('category')['amount'].sum().reset_index().copy()
+        report.loc[:, "amount"] = report["amount"].astype(float).round(2)
+
+        return report.sort_values("amount", ascending=False)
+
+
 
     def SummaryByMonthData(self) -> DataFrame:
         """
@@ -193,8 +267,7 @@ class TransactionDAO:
         df = self.GetDataFrame().copy()
 
         # Normalize transaction labels to lowercase so unstack yields 'income'/'expense'
-        df.loc[:, "transaction"] = df["transaction"].astype(
-            str).str.strip().str.lower()
+        df.loc[:, "transaction"] = df["transaction"].astype(str).str.strip().str.lower()
 
         # Dates are already 'YYYY/MM/DD' from GetDataFrame()
         dt = pd.to_datetime(df["date"], format="%Y/%m/%d", errors="coerce")

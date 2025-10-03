@@ -3,6 +3,7 @@ import os
 os.environ["PANDAS_COPY_ON_WRITE"] = "1"   # set BEFORE any pandas-using imports
 
 import tkinter as tk
+import sys
 from tkinter import ttk
 from src.ui.theme import ApplyTheme
 from src.ui.tab_view import ViewTransactionsTab
@@ -11,28 +12,72 @@ from src.ui.tab_report_category import ReportCategoryTab
 from src.ui.tab_report_month import ReportMonthTab
 from src.dao.transaction_dao import TransactionDAO
 from src.ui.tab_charts import ChartsTab
+from pathlib import Path
 
 
 class GillPayApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("GillPay")
+        self.title("GillPay\u2122")
         self.geometry("1024x680")
+
+
+
+        def _set_app_icon(win: tk.Tk) -> None:
+            # Resolve your project root (parent of /gui)
+            base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
+            images = base / "images"
+
+            # Try ICO first (best on Windows)
+            for name in ("gillpay.ico", "goofy_goldfishes.ico", "app.ico"):
+                p = images / name
+                if p.exists():
+                    try:
+                        win.iconbitmap(default=str(p))
+                        return
+                    except Exception:
+                        pass
+
+            # Fallback to PNG (cross-platform)
+            for name in ("gillpay_256.png", "goofy_goldfishes_256.png", "gillpay.png"):
+                p = images / name
+                if p.exists():
+                    try:
+                        win.iconphoto(True, tk.PhotoImage(file=str(p)))
+                        return
+                    except Exception:
+                        pass
+
+        _set_app_icon(self)
 
         # Theme/colors
         self.colors = ApplyTheme(self)
 
         # Title bar
-        title = tk.Frame(self, bg=self.colors["Navy"], height=46)
+        title = tk.Frame(self, bg=self.colors["Navy"], height=10)
         title.pack(fill="x")
         tk.Label(
             title,
-            text="GillPay",
-            fg=self.colors["TextOnDark"],
+            text="\nWelcome to GillPay\u2122  Your Personal Financial Tracking Application",
+            fg=self.colors["Orange"],
             bg=self.colors["Navy"],
-            font=("Segoe UI", 14, "bold"),
-            padx=14,
+            font=("Segoe UI", 16, "bold"),
+            padx=24,
         ).pack(side="left")
+
+        # Right-aligned logo in the title bar
+        try:
+            base = Path(__file__).resolve().parents[1]  # project root
+            images = base / "images"
+            # pick a crisp size you have in /images
+            for name in ("goofy_goldfishes_128.png", "gillpay.png"):
+                p = images / name
+                if p.exists():
+                    self.LogoSmall = tk.PhotoImage(file=str(p))  # keep a ref on self
+                    tk.Label(title, image=self.LogoSmall, bg=self.colors["Navy"]).pack(side="right", padx=24, pady=8)
+                    break
+        except Exception:
+            pass
 
         # Shared DAO
         self.Dao = TransactionDAO()
@@ -62,9 +107,9 @@ class GillPayApp(tk.Tk):
 
     def _BuildSummaryBar(self):
         bar = tk.Frame(self, bg=self.colors["Navy"])
-        bar.pack(fill="x", padx=10, pady=(0, 10))
+        bar.pack(fill="x", padx=10, pady=(20, 20))
 
-        f = ("Segoe UI", 10, "bold")
+        f = ("Segoe UI", 12, "bold")
         self.LblIncome = tk.Label(bar, text="Income: 0.00",  bg=self.colors["Navy"], fg=self.colors["TextOnDark"], font=f)
         self.LblExpense = tk.Label(bar, text="Expense: 0.00", bg=self.colors["Navy"], fg=self.colors["TextOnDark"], font=f)
         self.LblNet = tk.Label(bar, text="Net: 0.00",       bg=self.colors["Navy"], fg=self.colors["TextOnDark"], font=f)

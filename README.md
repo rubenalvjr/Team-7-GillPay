@@ -14,7 +14,7 @@ Jo Ann Kern
 
 Ruben Alvarez
 
-![Alt text](images/Goofy%20Goldfishes%20Updated%20Logo.png)
+
 
 
 
