@@ -20,14 +20,14 @@
 # enhanced efficiency and accuracy in my work, I use generative artificial
 # intelligence tools to assist in writing my Python code.
 
+
 """Transactions table tab with filter controls and sorting."""
 
 import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
-
+from src.dao.category_dao import CategoryDAO
 from src.dao.transaction_dao import TransactionDAO
-from src.categories import AllowedCategoriesForType
 
 
 class ViewTransactionsTab(ttk.Frame):
@@ -37,6 +37,7 @@ class ViewTransactionsTab(ttk.Frame):
         """Initialize filters, table, and initial data load."""
         super().__init__(parent, padding=12)
         self.Dao = dao
+        self.CatDao = CategoryDAO()
         self.OnRefresh = on_refresh
 
         bar = ttk.Frame(self)
@@ -109,23 +110,22 @@ class ViewTransactionsTab(ttk.Frame):
         self.LoadData()
 
     def RefreshCategoryFilter(self):
-        """Set Category options based on current Type filter; include 'All'
-        first."""
+        """Set Category options based on current Type filter; include 'All' first."""
         typ = (self.TypeFilterVar.get() or "All").strip()
         if typ == "All":
-            income = AllowedCategoriesForType("income")
-            expense = AllowedCategoriesForType("expense")
-            vals = ["All"] + income + [c for c in expense if c not in income]
+            income = self.CatDao.ListCategoryNames("Income")
+            expense = self.CatDao.ListCategoryNames("Expense")
+            merged = sorted(set(income) | set(expense), key=str.casefold)
+            vals = ["All"] + merged
         else:
-            vals = ["All"] + AllowedCategoriesForType(typ)
+            vals = ["All"] + self.CatDao.ListCategoryNames(typ)
 
         self.CategoryFilter["values"] = vals
         cur = self.CategoryFilterVar.get()
         self.CategoryFilterVar.set(cur if cur in vals else "All")
 
     def LoadData(self):
-        """Load DataFrame from DAO, apply filters, and render into the
-        Treeview."""
+        """Load DataFrame from DAO, apply filters, and render into the Treeview."""
         try:
             df = self.Dao.GetDataFrame()
         except Exception as ex:

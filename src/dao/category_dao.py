@@ -23,8 +23,6 @@
 
 """Data-access object for category management (Income/Expense) backed by CSV."""
 
-from __future__ import annotations
-
 import csv
 from pathlib import Path
 from typing import List, Dict
@@ -41,46 +39,32 @@ class CategoryDAO:
 
     COLUMNS = ["type", "name", "is_active"]
 
-    DEFAULTS = {
-        "Income": [
-            "Salary",
-            "Bonus",
-            "Interest",
-            "Dividends",
-            "Gifts",
-            "Investments",
-            "Other",
-        ],
-        "Expense": [
-            "Rent",
-            "Utilities",
-            "Groceries",
-            "Food & Dining",
-            "Transportation",
-            "Insurance",
-            "Entertainment",
-            "Healthcare",
-            "Education",
-            "Investments",
-            "Other",
-        ],
-    }
-
     def __init__(self, datasource: str | None = None):
-        """Create a DAO bound to a CSV file, seeding defaults if absent."""
+        """Bind to <repo>/data/categories.csv; create header if missing and
+        guarantee 'Other' exists for both Income and Expense."""
         if datasource is None:
             repo_root = Path(__file__).resolve().parents[2]
             self.CsvPath = repo_root / "data" / "categories.csv"
         else:
             self.CsvPath = Path(datasource).resolve()
+
         self.CsvPath.parent.mkdir(parents=True, exist_ok=True)
+
+        # Header-only seed if the file doesn't exist
         if not self.CsvPath.exists():
             with self.CsvPath.open("w", newline="", encoding="utf-8") as f:
-                w = csv.writer(f)
-                w.writerow(self.COLUMNS)
-                for t, names in self.DEFAULTS.items():
-                    for n in names:
-                        w.writerow([t, n, "1"])
+                csv.DictWriter(f, fieldnames=self.COLUMNS).writeheader()
+
+        # Ensure 'Other' exists for both types (since UI/validation expects it)
+        rows = self.Load()
+        changed = False
+        for t in ("Income", "Expense"):
+            if not any(r["type"] == t and (
+                    r["name"] or "").strip().lower() == "other" for r in rows):
+                rows.append({"type": t, "name": "Other", "is_active": "1"})
+                changed = True
+        if changed:
+            self.Save(rows)
 
     def Load(self) -> List[Dict[str, str]]:
         """Read and normalize all category rows from CSV."""

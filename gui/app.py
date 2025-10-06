@@ -4,8 +4,8 @@
 
 # PROGRAM: GillPay GUI Application
 
-# PURPOSE: Launches the GillPay™ desktop interface and assembles the main window,
-# tabs, theme, and summary bar for personal finance tracking.
+# PURPOSE: Launches the GillPay™ desktop interface and assembles the main
+# window,tabs, theme, and summary bar for personal finance tracking.
 
 # INPUT: Reads transactions via TransactionDAO, user actions in the GUI.
 
@@ -22,7 +22,9 @@
 # enhanced efficiency and accuracy in my work, I use generative artificial
 # intelligence tools to assist in writing my Python code.
 
-"""GillPay GUI launcher and main window composition for the personal finance app."""
+
+"""GillPay GUI launcher and main window composition for the personal finance
+app."""
 
 import os
 os.environ["PANDAS_COPY_ON_WRITE"] = "1"
@@ -31,7 +33,6 @@ import tkinter as tk
 import sys
 from tkinter import ttk
 from pathlib import Path
-
 from src.ui.theme import ApplyTheme
 from src.ui.tab_view import ViewTransactionsTab
 from src.ui.tab_add import AddTransactionTab
@@ -52,7 +53,8 @@ class GillPayApp(tk.Tk):
 
         def SetAppIcon(win: tk.Tk) -> None:
             """Set the application icon from available image assets."""
-            base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
+            base = Path(
+                getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
             images = base / "images"
 
             for name in ("gillpay.ico", "goofy_goldfishes.ico", "app.ico"):
@@ -64,7 +66,8 @@ class GillPayApp(tk.Tk):
                     except Exception:
                         pass
 
-            for name in ("gillpay_256.png", "goofy_goldfishes_256.png", "gillpay.png"):
+            for name in ("gillpay_256.png", "goofy_goldfishes_256.png",
+                         "gillpay.png"):
                 p = images / name
                 if p.exists():
                     try:
@@ -81,7 +84,8 @@ class GillPayApp(tk.Tk):
         title.pack(fill="x")
         tk.Label(
             title,
-            text="\nWelcome to GillPay\u2122  Your Personal Financial Tracking Application",
+            text="\nWelcome to GillPay\u2122  Your Personal Financial "
+                 "Tracking Application",
             fg=self.colors["Orange"],
             bg=self.colors["Navy"],
             font=("Segoe UI", 16, "bold"),
@@ -95,7 +99,9 @@ class GillPayApp(tk.Tk):
                 p = images / name
                 if p.exists():
                     self.LogoSmall = tk.PhotoImage(file=str(p))
-                    tk.Label(title, image=self.LogoSmall, bg=self.colors["Navy"]).pack(side="right", padx=24, pady=8)
+                    tk.Label(title, image=self.LogoSmall,
+                             bg=self.colors["Navy"]).pack(side="right", padx=24,
+                                                          pady=8)
                     break
         except Exception:
             pass
@@ -107,7 +113,8 @@ class GillPayApp(tk.Tk):
         self.Notebook = ttk.Notebook(self, style="Gill.TNotebook")
         self.Notebook.pack(expand=True, fill="both", padx=10, pady=(10, 6))
 
-        view_tab = ViewTransactionsTab(self.Notebook, self.Dao, on_refresh=self.RefreshSummary)
+        view_tab = ViewTransactionsTab(self.Notebook, self.Dao,
+                                       on_refresh=self.RefreshSummary)
         add_tab = AddTransactionTab(self.Notebook, self.Dao, view_tab)
         report_cat_tab = ReportCategoryTab(self.Notebook, self.Dao)
         report_month_tab = ReportMonthTab(self.Notebook, self.Dao)
@@ -127,9 +134,14 @@ class GillPayApp(tk.Tk):
         bar.pack(fill="x", padx=10, pady=(20, 20))
 
         f = ("Segoe UI", 12, "bold")
-        self.LblIncome = tk.Label(bar, text="Income: 0.00",  bg=self.colors["Navy"], fg=self.colors["TextOnDark"], font=f)
-        self.LblExpense = tk.Label(bar, text="Expense: 0.00", bg=self.colors["Navy"], fg=self.colors["TextOnDark"], font=f)
-        self.LblNet = tk.Label(bar, text="Net: 0.00",       bg=self.colors["Navy"], fg=self.colors["TextOnDark"], font=f)
+        self.LblIncome = tk.Label(bar, text="Income: 0.00",
+                                  bg=self.colors["Navy"],
+                                  fg=self.colors["TextOnDark"], font=f)
+        self.LblExpense = tk.Label(bar, text="Expense: 0.00",
+                                   bg=self.colors["Navy"],
+                                   fg=self.colors["TextOnDark"], font=f)
+        self.LblNet = tk.Label(bar, text="Net: 0.00", bg=self.colors["Navy"],
+                               fg=self.colors["TextOnDark"], font=f)
 
         self.LblIncome.pack(side="left", padx=(12, 16), pady=6)
         self.LblExpense.pack(side="left", padx=(0, 16), pady=6)
@@ -144,7 +156,7 @@ class GillPayApp(tk.Tk):
             income = expense = 0.0
         else:
             t = df["transaction"].astype(str).str.lower()
-            income = float(df.loc[t.eq("income"),  "amount"].sum())
+            income = float(df.loc[t.eq("income"), "amount"].sum())
             expense = float(df.loc[t.eq("expense"), "amount"].sum())
 
         net = income - expense

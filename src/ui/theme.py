@@ -20,11 +20,18 @@
 # enhanced efficiency and accuracy in my work, I use generative artificial
 # intelligence tools to assist in writing my Python code.
 
-"""GillPay theme: shared colors and ttk style configuration."""
+
+"""GillPay theme: shared colors and ttk style configuration.
+
+This module defines the GillPay color palette and a helper to apply a consistent
+ttk styling across the app. Call `ApplyTheme(root)` once after creating the Tk
+root to set up styles used by the GUI (e.g., `Gill.TButton`, `Gill.Treeview`).
+"""
 
 import tkinter as tk
 from tkinter import ttk
 
+# Base palette used throughout the UI.
 COLORS = {
     "Navy": "#0B2545",
     "Blue": "#13315C",
@@ -41,9 +48,19 @@ COLORS = {
 }
 
 
-def ApplyTheme(root: tk.Tk):
-    """Apply GillPay styles to the given Tk root and return the colors
-    mapping."""
+def ApplyTheme(root: tk.Tk) -> dict[str, str]:
+    """Configure ttk styles for GillPay and return the color palette.
+
+    Sets the theme to "clam" when available, applies style rules for common
+    widgets (Entry, Combobox, Buttons, Notebook, Treeview, etc.), and returns
+    the color map so callers can reuse consistent colors.
+
+    Args:
+        root: The Tk root window (or a widget associated with the root).
+
+    Returns:
+        dict[str, str]: The GillPay color palette (hex strings by name).
+    """
     colors = {
         "Navy": "#0B2545",
         "Blue": "#13315C",

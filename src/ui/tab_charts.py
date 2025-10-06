@@ -21,13 +21,11 @@
 # enhanced efficiency and accuracy in my work, I use generative artificial
 # intelligence tools to assist in writing my Python code.
 
-"""Tkinter tab that mounts GillPay charts built with Matplotlib."""
 
-from __future__ import annotations
+"""Tkinter tab that mounts GillPay charts built with Matplotlib."""
 
 import tkinter as tk
 from tkinter import ttk
-
 from src.gillpay_service import GillPayService
 from src.ui.charts import (
     BuildExpenseByCategoryFigure,

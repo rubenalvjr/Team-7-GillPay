@@ -20,11 +20,9 @@
 # enhanced efficiency and accuracy in my work, I use generative artificial
 # intelligence tools to assist in writing my Python code.
 
-from __future__ import annotations
 
 from datetime import datetime, date
 from typing import Dict, Literal, Optional
-
 from src.gillpay_service import GillPayService
 from src.models.transaction import Transaction
 
@@ -34,11 +32,12 @@ REPORT_SUMMARY_BY_MONTH: Literal["SUMMARY_BY_MONTH"] = "SUMMARY_BY_MONTH"
 
 # Validation helpers
 ALLOWED_DATE_FORMATS = [
-    "%Y/%m/%d",
-    "%Y-%m-%d",
-    "%m/%d/%Y",
-    "%d %B %Y",
-    "%d %b %Y",
+    "%Y/%m/%d",  # 2025/10/05
+    "%Y-%m-%d",  # 2025-10-05
+    "%m/%d/%Y",  # 10/05/2025
+    "%m-%d-%Y",  # 10-05-2025
+    "%d %b %Y",  # 05 Oct 2025
+    "%d %B %Y",  # 05 October 2025
 ]
 
 

@@ -28,15 +28,12 @@ from tkinter import ttk, messagebox
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 from tkcalendar import DateEntry
-from pathlib import Path
-
 from src.dao.transaction_dao import TransactionDAO
 from src.models.transaction import Transaction
-from src.categories import AllowedCategoriesForType
 from src.dao.category_dao import CategoryDAO
 from src.ui.category_manager_dialog import CategoryManagerDialog
-from src.ui.theme import \
-    COLORS as THEME_COLORS  # optional (for commented hero img)
+
+
 
 
 class AddTransactionTab(ttk.Frame):
@@ -125,11 +122,9 @@ class AddTransactionTab(ttk.Frame):
                                                            sticky="e", padx=6,
                                                            pady=6)
         self.AmountVar = tk.StringVar()
-        ttk.Entry(self, textvariable=self.AmountVar, width=15).grid(row=2,
-                                                                    column=1,
-                                                                    sticky="w",
-                                                                    padx=6,
-                                                                    pady=6)
+        self.AmountEntry = ttk.Entry(self, textvariable=self.AmountVar,
+                                     width=15)
+        self.AmountEntry.grid(row=2, column=1, sticky="w", padx=6, pady=6)
 
         # Date
         ttk.Label(self, text="Date:", **label_opts).grid(row=3, column=0,
@@ -149,11 +144,10 @@ class AddTransactionTab(ttk.Frame):
                                                                 sticky="e",
                                                                 padx=6, pady=6)
         self.DescriptionVar = tk.StringVar()
-        ttk.Entry(self, textvariable=self.DescriptionVar, width=30).grid(row=4,
-                                                                         column=1,
-                                                                         sticky="w",
-                                                                         padx=6,
-                                                                         pady=6)
+        self.DescriptionEntry = ttk.Entry(self,
+                                          textvariable=self.DescriptionVar,
+                                          width=30)
+        self.DescriptionEntry.grid(row=4, column=1, sticky="w", padx=6, pady=6)
 
         # Buttons
         row = ttk.Frame(self)
@@ -165,9 +159,17 @@ class AddTransactionTab(ttk.Frame):
             row=0, column=1, padx=6)
         self.columnconfigure(1, weight=1)
 
-        # Shortcuts
-        self.bind_all("<Return>", lambda e: self.OnSave())
-        self.bind_all("<Escape>", lambda e: self.ClearForm(preserve_type=True))
+        def BindLocalShortcuts():
+            widgets = [self.AmountEntry, self.DescriptionEntry,
+                       self.CategoryBox, self.CustomCatEntry]
+            for w in widgets:
+                w.bind("<Return>", lambda e: (self.OnSave() or "break"),
+                       add=True)
+                w.bind("<Escape>", lambda e: (
+                            self.ClearForm(preserve_type=True) or "break"),
+                       add=True)
+
+        BindLocalShortcuts()
 
         # Reactive behaviors
         self.SetCategoryOptionsForType(self.TypeVar.get())
@@ -198,19 +200,9 @@ class AddTransactionTab(ttk.Frame):
             pass
 
     def SetCategoryOptionsForType(self, gui_type: str):
-        """Load default plus managed categories for the selected type and
-        ensure 'Other' is last."""
-        defaults = [c for c in AllowedCategoriesForType(gui_type) if
-                    c.lower() != "other"]
-        managed = [c for c in self.CatDao.ListCategoryNames(gui_type) if
-                   c.lower() != "other"]
-
-        base = defaults[:]
-        for n in managed:
-            if n not in base:
-                base.append(n)
-        base.append("Other")
-
+        """Load categories for the selected type (alphabetical, including 'Other')."""
+        base = self.CatDao.ListCategoryNames(
+            gui_type)  # already deduped & sorted
         self.CategoryBox["values"] = base
         current = self.CategoryVar.get()
         self.CategoryVar.set(
@@ -298,7 +290,7 @@ class AddTransactionTab(ttk.Frame):
                                  'Type must be "income" or "expense".')
             return
 
-        allowed = set(AllowedCategoriesForType(
+        allowed = set(self.CatDao.ListCategoryNames(
             "Income" if txn == "income" else "Expense"))
         if sel == "Other":
             if not custom:

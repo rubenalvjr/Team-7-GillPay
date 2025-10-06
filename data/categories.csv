@@ -1,18 +1,18 @@
 type,name,is_active
-Income,Salary,1
 Income,Bonus,1
-Income,Interest,1
 Income,Dividends,1
 Income,Gifts,1
+Income,Interest,1
 Income,Investments,1
 Income,Other,1
-Expense,Rent,1
-Expense,Utilities,1
-Expense,Groceries,1
-Expense,Food & Dining,1
-Expense,Transportation,1
-Expense,Insurance,1
-Expense,Entertainment,1
-Expense,Healthcare,1
+Income,Salary,1
 Expense,Education,1
+Expense,Entertainment,1
+Expense,Food & Dining,1
+Expense,Groceries,1
+Expense,Healthcare,1
+Expense,Insurance,1
 Expense,Other,1
+Expense,Rent,1
+Expense,Transportation,1
+Expense,Utilities,1

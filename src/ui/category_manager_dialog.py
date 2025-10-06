@@ -133,13 +133,10 @@ class CategoryManagerDialog(tk.Toplevel):
             "inc") else "Expense"
 
     def Load(self):
-        """Populate the listbox with active category names for the selected
-        type."""
         self.List.delete(0, tk.END)
         names = self.dao.ListCategoryNames(self.CurrentType())
         for n in names:
-            if n.lower() != "other":
-                self.List.insert(tk.END, n)
+            self.List.insert(tk.END, n)
 
     def Selected(self):
         """Return the currently selected category name or None."""
@@ -221,9 +218,9 @@ class CategoryManagerDialog(tk.Toplevel):
         self.update_idletasks()
         try:
             px = parent.winfo_rootx() + (parent.winfo_width() // 2) - (
-                        self.winfo_width() // 2)
+                    self.winfo_width() // 2)
             py = parent.winfo_rooty() + (parent.winfo_height() // 2) - (
-                        self.winfo_height() // 2)
+                    self.winfo_height() // 2)
         except Exception:
             px = py = 100
         self.geometry(f"+{px}+{py}")

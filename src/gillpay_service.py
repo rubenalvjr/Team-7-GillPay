@@ -31,7 +31,7 @@ from prettytable import PrettyTable
 
 from src.models.transaction import Transaction
 from src.dao.transaction_dao import TransactionDAO
-from src.categories import IsValidCategory, AllowedCategoriesForType
+from src.dao.category_dao import CategoryDAO
 
 
 class GillPayService:
@@ -41,6 +41,7 @@ class GillPayService:
 
     def __init__(self) -> None:
         """Initialize the service and its DAO dependency."""
+        self.CategoryDAO = CategoryDAO()
         self.TransactionDAO = TransactionDAO()
 
     # Data access
@@ -82,9 +83,12 @@ class GillPayService:
                 "You entered an invalid date.\nPlease enter the date in the "
                 "format YYYY/MM/DD.")
 
-        if not IsValidCategory(tx_type, Tx.category):
-            allowed = ", ".join(AllowedCategoriesForType(
-                "Income" if tx_type == "income" else "Expense"))
+        allowed_list = self.CategoryDAO.ListCategoryNames(
+            "Income" if tx_type == "income" else "Expense")
+        needle = (Tx.category or "").strip().casefold()
+        is_valid = any(c.casefold() == needle for c in allowed_list)
+        if not is_valid:
+            allowed = ", ".join(allowed_list)
             raise ValueError(
                 f"Invalid category '{Tx.category}' for transaction '"
                 f"{tx_type}'.\nAllowed: {allowed}.")
